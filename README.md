@@ -1,2 +1,2 @@
-# Student Performace App
+# Student Performance App
  just for fun
