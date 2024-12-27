@@ -1,13 +1,13 @@
-package com.student_per_app.student_performace_application;
+package com.student.performance.app.Student_Performance_App;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class StudentPerformaceApplication {
+public class StudentPerformanceAppApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(StudentPerformaceApplication.class, args);
+		SpringApplication.run(StudentPerformanceAppApplication.class, args);
 	}
 
 }

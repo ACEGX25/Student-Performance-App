@@ -1,10 +1,10 @@
-package com.student_per_app.student_performace_application;
+package com.student.performance.app.Student_Performance_App;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class StudentPerformaceApplicationTests {
+class StudentPerformanceAppApplicationTests {
 
 	@Test
 	void contextLoads() {
