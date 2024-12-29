@@ -1,2 +1,1 @@
-# Student Performance App
- just for fun
+readme will be updated after project is done and dusted!
