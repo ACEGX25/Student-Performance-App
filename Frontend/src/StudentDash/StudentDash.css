@@ -1,0 +1,55 @@
+/* Custom styles for Student Performance App */
+
+/* Custom font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* Apply custom font to the entire app */
+body {
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Custom styles for the header */
+.app-header {
+  background: linear-gradient(to right, #4a90e2, #63b3ed);
+}
+
+/* Custom styles for cards */
+.feature-card {
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Custom styles for buttons */
+.custom-button {
+  transition: background-color 0.3s ease-in-out, transform 0.1s ease-in-out;
+}
+
+.custom-button:hover {
+  transform: scale(1.05);
+}
+
+.custom-button:active {
+  transform: scale(0.95);
+}
+
+/* Animation for notifications */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.notification-pulse {
+  animation: pulse 2s infinite;
+}
+
