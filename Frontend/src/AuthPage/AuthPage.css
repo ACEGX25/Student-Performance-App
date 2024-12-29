@@ -30,6 +30,7 @@
     max-width: 400px;
     margin: 0 auto;
     width: 100%;
+    box-shadow: 1px 6px 6px 6px gray ;
   }
   
   .auth-title {

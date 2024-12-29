@@ -43,6 +43,8 @@ const AuthPage = () => {
   };
 
   return (
+    <div>
+      <div className="animated-background"></div>
     <div className="auth-page">
       <div className="auth-container">
         <h2 className="auth-title">
@@ -180,6 +182,7 @@ const AuthPage = () => {
         </div>
       </div>
     </div>
+  </div>
   );
 };
 
