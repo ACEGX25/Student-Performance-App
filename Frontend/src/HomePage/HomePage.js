@@ -9,8 +9,7 @@ const HomePage = () => {
         <h1 className="title">Welcome to EduTrack</h1>
         <p className="subtitle">Empowering education through innovative tracking</p>
         <div className="button-container">
-          <Link to="/login" className="btn btn-login">Login</Link>
-          <Link to="/signup" className="btn btn-signup">Sign Up</Link>
+          <Link to="/authpage" className="btn btn-login">Get Started!</Link>
         </div>
       </div>
       <div className="animated-background"></div>
