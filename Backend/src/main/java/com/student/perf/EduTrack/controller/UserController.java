@@ -13,6 +13,7 @@ import com.student.perf.EduTrack.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -97,5 +98,13 @@ public class UserController {
             // Return error response
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
+    }
+
+    // Logout API
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout() {
+        // Clear authentication and SecurityContext
+        SecurityContextHolder.clearContext();
+        return ResponseEntity.ok("Logged out successfully!");
     }
 }

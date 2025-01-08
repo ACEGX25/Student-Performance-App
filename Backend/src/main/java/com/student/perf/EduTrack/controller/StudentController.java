@@ -25,6 +25,49 @@ public class StudentController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @PutMapping("/fill-details/${username}")
+    public ResponseEntity<?> filldetials(
+            @RequestBody Student filldata,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        try {
+            // Retrieve the current logged-in student
+            Student student = studentRepository.findByUsername(userDetails.getUsername())
+                    .orElseThrow(() -> new RuntimeException("Student not found"));
+
+            // Update only non-null fields
+            if (filldata.getRollno() != 0) {
+                student.setRollno(filldata.getRollno());
+            }
+            if (filldata.getDepartment() != null) {
+                student.setDepartment(filldata.getDepartment());
+            }
+
+            if (filldata.getAddress() != null) {
+                student.setAddress(filldata.getAddress());
+            }
+
+            if (filldata.getFamily_income() != null) {
+                student.setFamily_income(filldata.getFamily_income());
+            }
+
+            if (filldata.getDistance_from_home() != null) {
+                student.setDistance_from_home(filldata.getDistance_from_home());
+            }
+
+            // Save the updated student object
+            Student created = studentRepository.save(student);
+
+            System.out.println("Student details updated successfully for username: " + userDetails.getUsername());
+
+            return ResponseEntity.ok(created);
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+
+    }
+
     // Secure GET Request for Student Dashboard
     @GetMapping("/dashboard/{username}")
     public ResponseEntity<?> getStudentDashboard(@AuthenticationPrincipal UserDetails userDetails) {
@@ -40,7 +83,7 @@ public class StudentController {
     }
 
     // Secure PUT Request for Student details update
-    @PutMapping("/update")
+    @PutMapping("/update/{username}")
     public ResponseEntity<?> updateStudentDetails(
             @RequestBody Student updatedDetails,
             @AuthenticationPrincipal UserDetails userDetails) {
