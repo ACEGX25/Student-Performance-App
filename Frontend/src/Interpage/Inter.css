@@ -1,1 +1,49 @@
-/*  */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles for ProfileCompletion */
+.profile-completion-form {
+  @apply max-w-2xl mx-auto;
+}
+
+.profile-completion-form input[type="file"] {
+  @apply file:mr-4 file:py-2 file:px-4
+    file:rounded-full file:border-0
+    file:text-sm file:font-semibold
+    file:bg-blue-50 file:text-blue-700
+    hover:file:bg-blue-100;
+}
+
+/* Custom scrollbar for the form */
+.profile-completion-form::-webkit-scrollbar {
+  width: 8px;
+}
+
+.profile-completion-form::-webkit-scrollbar-track {
+  @apply bg-gray-100;
+}
+
+.profile-completion-form::-webkit-scrollbar-thumb {
+  @apply bg-blue-300 rounded-full;
+}
+
+.profile-completion-form::-webkit-scrollbar-thumb:hover {
+  @apply bg-blue-400;
+}
+
+/* Enhance focus styles for better accessibility */
+input:focus, textarea:focus, button:focus, select:focus {
+  @apply outline-none ring-2 ring-blue-400;
+}
+
+/* Responsive font sizes */
+@media (max-width: 640px) {
+  h1 {
+    @apply text-3xl;
+  }
+  h2 {
+    @apply text-2xl;
+  }
+}
+
