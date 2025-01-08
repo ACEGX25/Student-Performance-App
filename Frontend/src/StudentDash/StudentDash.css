@@ -1,31 +1,125 @@
 /* Custom styles for Student Performance App */
 
 /* Custom font */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 
 /* Apply custom font to the entire app */
-body {
-  font-family: 'Poppins', sans-serif;
+#daddy {
+  font-family: 'Montserrat', sans-serif;
+  background-color: #ffffff;
 }
 
 /* Custom styles for the header */
 .app-header {
-  background: linear-gradient(to right, #4a90e2, #63b3ed);
+  background: linear-gradient(to right bottom, #164ea1, #175ead, #1e6db8, #297dc2, #388ccb);
 }
 
 /* Custom styles for cards */
-.feature-card {
+.feature-card { 
   transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  background: linear-gradient(to right bottom, #164ea1, #175ead, #1e6db8, #297dc2, #388ccb);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  /* margin: 50px auto;
+  width: 300px;
+  height: 300px; */
+  /* max-width: calc(100% - 60px); */
+  /* background: #ffffff; */
+  position: relative;
+  border: 2px solid #111;
+  --c: #0a5dda; /* the color */
+  --b: .1em;    /* border length*/
+  --d: 20px;    /* the cube depth */
+
+  --_s: calc(var(--d) + var(--b));
+
+  color: var(--c);
+  border: solid #0000;
+  border-width: var(--b) var(--b) var(--_s) var(--_s);
+  background:
+    conic-gradient(at left var(--d)  bottom var(--d),
+      #0000 90deg, rgb(255 255 255 /0.3) 0 225deg,rgb(255 255 255 /0.6) 0) border-box,
+    conic-gradient(at left var(--_s) bottom var(--_s),
+      #0000 90deg,var(--c) 0) 0 100%/calc(100% - var(--b)) calc(100% - var(--b))  border-box;
+  transform: translate(calc(var(--d)/-1),var(--d));
+  clip-path: 
+    polygon(
+     var(--d) 0%, 
+     var(--d) 0%, 
+     100% 0%, 
+     100% calc(100% - var(--d)),
+     100% calc(100% - var(--d)),
+     var(--d) calc(100% - var(--d))
+    );
+  transition: 0.5s;
 }
+
+
 
 .feature-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  clip-path: 
+  polygon(
+   0% var(--d), 
+   var(--d) 0%, 
+   100% 0%, 
+   100% calc(100% - var(--d)), 
+   calc(100% - var(--d)) 100%, 
+   0% 100%
+ );
 }
+
+#chutiya{
+  border: 2px solid #111;
+}
+
+#nalayak{
+  border: 2px solid #111;
+}
+
+#headache{
+  padding-bottom: 50px;
+}
+
+#mean{
+  padding-top: 10px;
+}
+
+#gone{
+  padding-top: 10px;
+}
+
+
+
+/* .feature-card::before{
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  top: 20px;
+  left: 20px;
+  border-radius: inherit;
+  background: repeating-linear-gradient(
+    45deg,
+    #d4c481,
+    #d4c481 2px,
+    transparent 2px,
+    transparent 6px
+  );
+  transition: all 0.3s ease;
+} */
 
 /* Custom styles for buttons */
 .custom-button {
   transition: background-color 0.3s ease-in-out, transform 0.1s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  font-weight: 500;
+  color: #f05f7e;
+  text-decoration: none;
 }
 
 .custom-button:hover {
@@ -53,3 +147,268 @@ body {
   animation: pulse 2s infinite;
 }
 
+/* Styles for the student profile section */
+.student-profile {
+  background-color: white;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-top: 2rem;
+  
+}
+
+.student-profile h3 {
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+.student-profile p {
+  margin-bottom: 0.5rem;
+  color: #34495e;
+}
+
+.student-profile strong {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+/* Styles for progress bars */
+.progress-bar {
+  background-color: #e2e8f0;
+  border-radius: 9999px;
+  height: 0.5rem;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.3s ease-in-out;
+}
+
+/* Styles for circular progress bars */
+.circular-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 120px;
+}
+
+.circular-chart {
+  width: 100%;
+  height: auto;
+}
+
+.circle-bg {
+  fill: none;
+  stroke: #eee;
+  stroke-width: 3.8;
+}
+
+.circle {
+  fill: none;
+  stroke-width: 2.8;
+  stroke-linecap: round;
+  animation: progress 1s ease-out forwards;
+}
+
+@keyframes progress {
+  0% {
+    stroke-dasharray: 0 100;
+  }
+}
+
+.percentage {
+  fill: #666;
+  font-family: sans-serif;
+  font-size: 0.5em;
+  text-anchor: middle;
+}
+
+.progress-label {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: #4a5568;
+  text-align: center;
+}
+
+/* Responsive design adjustments */
+@media (max-width: 768px) {
+  .feature-card {
+    margin-bottom: 1rem;
+  }
+
+  .student-profile {
+    padding: 1rem;
+  }
+
+  .circular-progress {
+    width: 100px;
+  }
+
+  .student-profile .text-lg {
+    font-size: 1rem;
+  }
+}
+
+/* Footer styles */
+footer {
+  background-color: #2c3e50;
+  color: white;
+  padding: 1rem 0;
+  margin-top: 2rem;
+}
+
+/* Additional utility classes */
+.text-primary {
+  color: #4a90e2;
+}
+
+.text-success {
+  color: #2ecc71;
+}
+
+.text-warning {
+  color: #f39c12;
+}
+
+.text-danger {
+  color: #e74c3c;
+}
+
+.bg-primary {
+  background-color: #4a90e2;
+}
+
+.bg-success {
+  background-color: #2ecc71;
+}
+
+.bg-warning {
+  background-color: #f39c12;
+}
+
+.bg-danger {
+  background-color: #e74c3c;
+}
+
+.hover-effect {
+  transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.hover-effect:hover {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  transform: translateY(-5px);
+}
+
+/* Improved spacing for circular progress bars */
+.circular-progress-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+/* Adjustments for better mobile responsiveness */
+@media (max-width: 640px) {
+  .circular-progress-container {
+    flex-direction: column;
+  }
+
+  .circular-progress {
+    margin-bottom: 1rem;
+  }
+}
+
+#aloha{
+  padding-top: 20px ;
+}
+
+.shape {
+  position: absolute;
+  opacity: 0.2;
+  transition: all 0.5s ease;
+}
+
+.circle1 {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: #3498db;
+  top: -20px;
+  right: -20px;
+  animation: float 8s ease-in-out infinite;
+}
+
+.circle2 {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #2ecc71;
+  bottom: -10px;
+  left: 10%;
+  animation: float 10s ease-in-out infinite;
+}
+
+.square1 {
+  width: 50px;
+  height: 50px;
+  background-color: #e74c3c;
+  top: 20%;
+  left: 20%;
+  animation: rotate 12s linear infinite;
+}
+
+.triangle1 {
+  width: 0;
+  height: 0;
+  border-left: 30px solid transparent;
+  border-right: 30px solid transparent;
+  border-bottom: 50px solid #f39c12;
+  right: 15%;
+  bottom: 20%;
+  animation: float 9s ease-in-out infinite;
+}
+
+.rectangle1 {
+  width: 80px;
+  height: 40px;
+  background-color: #9b59b6;
+  top: 60%;
+  left: 5%;
+  animation: rotate 15s linear infinite;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.welcome-header:hover .shape {
+  opacity: 0.4;
+}
+
+.app-header {
+  background-color: #2c3e50;
+}
+
+.welcome-header {
+  position: relative;
+  overflow: hidden;
+}

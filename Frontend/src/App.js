@@ -4,6 +4,9 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import StudentDash from './StudentDash/StudentDash';
 import AuthPage from './AuthPage/AuthPage'
 import HomePage from './HomePage/HomePage';
+import UserProfile from './UserProfile/UserProfile';
+import TeacherDash from './TeacherDash/TeacherDash'
+// import Inter from './Interpage/Inter'
 
 // Component for Handling Routes
 function AnimatedRoutes() {
@@ -13,7 +16,10 @@ function AnimatedRoutes() {
     <Routes location={location} key={location.pathname}>
       <Route path="/" element={<HomePage />} />
       <Route path="/authpage" element={<AuthPage />} />
-      <Route path="/student/dashboard" element={<StudentDash />} />
+      {/* <Route path="/fill-details" element={< Inter/>} /> */}
+      <Route path="/student/dashboard/:username" element={<StudentDash />} />
+      <Route path="/student/profile/:username" element={<UserProfile />} />
+      <Route path="/teacher/dashboard" element={<TeacherDash />}/>
     </Routes>
   );
 }

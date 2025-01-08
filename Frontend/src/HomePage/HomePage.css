@@ -5,11 +5,12 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-image: url('/resources/new-bg.png');
+  background-image: url('/resources/education-background.svg');
   background-size: cover;
   background-position: center;
   position: relative;
   overflow: hidden;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .content {
@@ -29,6 +30,7 @@
   font-size: 3rem;
   color: #2c3e50;
   margin-bottom: 1rem;
+  font-weight: 500;
   animation: slideDown 1s ease-out;
 }
 
@@ -56,7 +58,47 @@
   transition: all 0.3s ease;
   text-decoration: none;
   animation: fadeIn 1s ease-out 1s both;
+  overflow: hidden;
 }
+
+
+.btn:before {
+  content: '';
+  position: absolute;
+  width: 100px;
+  height: 100%;
+  background-image: linear-gradient(
+      120deg,
+      rgba(255,255,255, 0) 30%,
+      rgba(255,255,255, .8),
+      rgba(255,255,255, 0) 70%
+  );
+  top: 0;
+  left: -100px;
+}
+
+@keyframes shine {
+  0% {left: -100px}
+  20% {left: 100%}
+  100% {left: 100%}
+}
+
+.btn:before {
+  content: '';
+  position: absolute;
+  width: 100px;
+  height: 100%;
+  background-image: linear-gradient(
+      120deg,
+      rgba(255,255,255, 0) 30%,
+      rgba(255,255,255, .8),
+      rgba(255,255,255, 0) 70%
+  );
+  top: 0;
+  left: -100px;
+  animation: shine 3s infinite linear; /* Animation */
+}
+
 
 .btn-login {
   background-color: #3498db;
@@ -80,7 +122,7 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.animated-background {
+/* .animated-background {
   position: absolute;
   top: 0;
   left: 0;
@@ -90,7 +132,7 @@
   background-size: 400% 400%;
   animation: gradientAnimation 15s ease infinite;
   opacity: 0.3;
-}
+} */
 
 @keyframes fadeIn {
   from {

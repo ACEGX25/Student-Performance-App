@@ -3,8 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "button": "^1.1.1",
     "cra-template": "1.2.0",
+    "input": "^1.0.1",
+    "label": "^0.2.2",
     "lucide-react": "^0.469.0",
+    "radio-group": "^0.0.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.1.1",

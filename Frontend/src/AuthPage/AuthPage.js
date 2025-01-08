@@ -1,50 +1,83 @@
 import React, { useState } from 'react';
-import { Eye, EyeOff, User, Lock, Mail, UserPlus } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Eye, EyeOff, User, Lock, Mail } from 'lucide-react';
 import './AuthPage.css';
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [name, setName] = useState('');
   const [role, setRole] = useState('student');
   const [errors, setErrors] = useState({});
+  const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
   const validatePassword = (password) => {
     const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])/;
     return regex.test(password);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = {};
 
     if (!isLogin) {
       if (password !== confirmPassword) {
-        newErrors.confirmPassword = "Passwords do not match";
+        newErrors.confirmPassword = 'Passwords do not match';
       }
       if (!validatePassword(password)) {
-        newErrors.password = "Password must contain at least one uppercase letter, one lowercase letter, and one special character";
+        newErrors.password = 'Password must contain at least one uppercase letter, one lowercase letter, and one special character';
       }
       if (password.length < 8) {
-        newErrors.password = (newErrors.password || "") + " Password must be at least 8 characters long";
+        newErrors.password = (newErrors.password || '') + ' Password must be at least 8 characters long';
       }
     }
 
     if (Object.keys(newErrors).length === 0) {
-      // Here you would typically handle the authentication logic
-      console.log(isLogin ? 'Logging in...' : 'Signing up...', { email, password, name, role });
+      try {
+        const url = isLogin ? 'http://localhost:8080/api/auth/login' : 'http://localhost:8080/api/auth/signup';
+        const payload = isLogin
+          ? { username, password }
+          : { username, email, password, role, name };
+
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          localStorage.setItem('authToken', data.token);
+          localStorage.setItem('role', data.role);
+          localStorage.setItem('username', data.username);
+
+
+          // Redirect based on role
+          if (data.role === 'Student') navigate(`/student/dashboard/${username}`);
+          else if (data.role === 'staff') navigate(`/teacher/dashboard`);
+          else if (data.role === 'admin') navigate('/admin-dashboard');
+          else navigate('/fill-details');
+
+          window.location.reload();
+        } else {
+          const result = await response.json();
+          setMessage(result.message || 'Authentication failed');
+        }
+      } catch (error) {
+        setMessage('Error: ' + error.message);
+      }
     } else {
       setErrors(newErrors);
     }
   };
 
   return (
-    <div>
-      <div className="animated-background"></div>
     <div className="auth-page">
       <div className="auth-container">
         <h2 className="auth-title">
@@ -62,7 +95,7 @@ const AuthPage = () => {
                   name="name"
                   type="text"
                   required
-                  placeholder="John Doe"
+                  placeholder="Enter your name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
@@ -71,21 +104,38 @@ const AuthPage = () => {
           )}
 
           <div className="form-group">
-            <label htmlFor="email">Email address</label>
+            <label htmlFor="username">Username</label>
             <div className="input-group">
-              <Mail className="input-icon" />
+              <User className="input-icon" />
               <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
+                id="username"
+                name="username"
+                type="text"
                 required
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
               />
             </div>
           </div>
+
+          {!isLogin && (
+            <div className="form-group">
+              <label htmlFor="email">Email</label>
+              <div className="input-group">
+                <Mail className="input-icon" />
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+            </div>
+          )}
 
           <div className="form-group">
             <label htmlFor="password">Password</label>
@@ -94,7 +144,7 @@ const AuthPage = () => {
               <input
                 id="password"
                 name="password"
-                type={showPassword ? "text" : "password"}
+                type={showPassword ? 'text' : 'password'}
                 autoComplete="current-password"
                 required
                 placeholder="••••••••"
@@ -106,11 +156,7 @@ const AuthPage = () => {
                 onClick={() => setShowPassword(!showPassword)}
                 className="password-toggle"
               >
-                {showPassword ? (
-                  <EyeOff className="input-icon" />
-                ) : (
-                  <Eye className="input-icon" />
-                )}
+                {showPassword ? <EyeOff className="input-icon" /> : <Eye className="input-icon" />}
               </button>
             </div>
             {errors.password && <p className="error-message">{errors.password}</p>}
@@ -124,23 +170,12 @@ const AuthPage = () => {
                 <input
                   id="confirmPassword"
                   name="confirmPassword"
-                  type={showConfirmPassword ? "text" : "password"}
+                  type={showConfirmPassword ? 'text' : 'password'}
                   required
                   placeholder="••••••••"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="password-toggle"
-                >
-                  {showConfirmPassword ? (
-                    <EyeOff className="input-icon" />
-                  ) : (
-                    <Eye className="input-icon" />
-                  )}
-                </button>
               </div>
               {errors.confirmPassword && <p className="error-message">{errors.confirmPassword}</p>}
             </div>
@@ -166,25 +201,17 @@ const AuthPage = () => {
           </button>
         </form>
 
-        <div className="auth-switch">
-          <div className="divider">
-            <span>
-              {isLogin ? 'New to the platform?' : 'Already have an account?'}
-            </span>
-          </div>
+        {message && <p className="message">{message}</p>}
 
-          <button
-            onClick={() => setIsLogin(!isLogin)}
-            className="switch-button"
-          >
+        <div className="auth-switch">
+          <span>{isLogin ? 'New to the platform?' : 'Already have an account?'}</span>
+          <button onClick={() => setIsLogin(!isLogin)} className="switch-button">
             {isLogin ? 'Create a new account' : 'Sign in to your account'}
           </button>
         </div>
       </div>
     </div>
-  </div>
   );
 };
 
 export default AuthPage;
-
