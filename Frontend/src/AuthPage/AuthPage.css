@@ -145,6 +145,7 @@
 .auth-switch {
   margin-top: 1.5rem;
   animation: fadeIn 1s ease-out 1.5s both;
+  text-align: center;
 }
 
 .divider {
@@ -198,6 +199,10 @@
   font-size: 0.75rem;
   color: #7f8c8d;
   margin-top: 0.25rem;
+}
+
+.padding {
+  padding-bottom: 20px;
 }
 
 /* .animated-background {

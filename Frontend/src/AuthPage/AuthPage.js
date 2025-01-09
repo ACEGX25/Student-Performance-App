@@ -53,18 +53,26 @@ const AuthPage = () => {
 
         if (response.ok) {
           const data = await response.json();
-          localStorage.setItem('authToken', data.token);
-          localStorage.setItem('role', data.role);
-          localStorage.setItem('username', data.username);
 
+          if (isLogin) {
+            localStorage.setItem('authToken', data.token);
+            localStorage.setItem('role', data.role);
+            localStorage.setItem('username', data.username);
 
-          // Redirect based on role
-          if (data.role === 'Student') navigate(`/student/dashboard/${username}`);
-          else if (data.role === 'staff') navigate(`/teacher/dashboard`);
-          else if (data.role === 'admin') navigate('/admin-dashboard');
-          else navigate('/fill-details');
+            // Redirect based on role
+            if (data.role === 'Student') navigate(`/student/dashboard/${username}`);
+            else if (data.role === 'staff') navigate(`/teacher/dashboard`);
+            else if (data.role === 'admin') navigate('/admin-dashboard');
+            else navigate('/fill-details');
 
-          window.location.reload();
+            window.location.reload();
+          } else {
+            setMessage('Account Created Successfully! Redirecting you to the login, Please Wait!');
+            setTimeout(() => {
+              setIsLogin(true);
+              setMessage('');
+            }, 3000);
+          }
         } else {
           const result = await response.json();
           setMessage(result.message || 'Authentication failed');
@@ -204,7 +212,7 @@ const AuthPage = () => {
         {message && <p className="message">{message}</p>}
 
         <div className="auth-switch">
-          <span>{isLogin ? 'New to the platform?' : 'Already have an account?'}</span>
+          <div className="padding">{isLogin ? 'New to the platform?' : 'Already have an account?'}</div>
           <button onClick={() => setIsLogin(!isLogin)} className="switch-button">
             {isLogin ? 'Create a new account' : 'Sign in to your account'}
           </button>

@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from 'react'
 import { Eye, EyeOff, User, Mail, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import car1 from '../assets/carousel1.jpg'
-import car2 from '../assets/carousel2.jpg'
-import car3 from '../assets/carousel3.jpg'
-import car4 from '../assets/carousel4.jpg'
+//import car1 from '../assets/carousel1.gif'
+//import car2 from '../assets/carousel2.gif'
+import car3 from '../assets/carousel3.gif'
+//import car4 from '../assets/carousel4.jpg'
 import "./Inter.css";
 
 
 const images = [
-  `${car1}text=Campus+Life`,
-  `${car2}text=Students+Studying`,
-  `${car3}text=Graduation+Ceremony`,
-  `${car4}text=Graduation+Ceremony`
+  //{ src: car1, alt: 'Campus Life' },
+  //{ src: car2, alt: 'Students Studying' },
+  { src: car3, alt: 'Graduation Ceremony' },
+  //{ src: car4, alt: 'Graduation Ceremony' },
 ];
+
 
 export default function ProfileCompletion() {
   const [currentImage, setCurrentImage] = useState(0);
@@ -257,18 +258,19 @@ export default function ProfileCompletion() {
 
         {/* Right side - Photo Carousel */}
         <div className="hidden md:block w-1/2 relative overflow-hidden">
-          {images.map((src, index) => (
-            <img
-              key={src}
-              src={src}
-              alt={`Slide ${index + 1}`}
-              className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-1000 ${
-                index === currentImage ? 'opacity-100' : 'opacity-0'
-              }`}
-            />
-          ))}
-        </div>
-      </main>
+            {images.map((image, index) => (
+              <img
+                key={index}
+                src={image.src}
+                alt={image.alt}
+                className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-1000 ${
+                  index === currentImage ? 'opacity-100' : 'opacity-0'
+                }`}
+              />
+            ))}
+          </div>
+
+       </main>
 
       {/* Footer */}
       <footer className="bg-gray-800 text-white p-4">
