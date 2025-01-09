@@ -27,6 +27,7 @@ export default function ProfileCompletion() {
     addressField2: '',
     residence: '',
     gender: '',
+    activity: '',
     photo: null
   });
   const [errors, setErrors] = useState({});
@@ -61,6 +62,7 @@ export default function ProfileCompletion() {
     if (!formData.addressField1) newErrors.addressField1 = 'Address Field 1 is required';
     if (!formData.residence) newErrors.residence = 'Residence is required';
     if (!formData.gender) newErrors.gender = 'Gender is required';
+    if (!formData.activity) newErrors.activity = 'Activity is required';
 
     if (Object.keys(newErrors).length === 0) {
       try {
@@ -118,7 +120,7 @@ export default function ProfileCompletion() {
             <div className="space-y-2">
               <label className="text-lg font-semibold">Department</label>
               <div className="grid grid-cols-3 gap-4">
-                {['Computer Science', 'Electrical Engineering', 'Mechanical Engineering', 'Civil Engineering', 'Electronics and Telecommunication'].map((dept) => (
+                {['Computer Science', 'Information Technology', 'Mechanical Engineering', 'Civil Engineering', 'Electronics and Telecommunication'].map((dept) => (
                   <label key={dept} className="flex items-center space-x-2 p-4 bg-white rounded-lg shadow-md cursor-pointer transition-all duration-200 hover:bg-blue-50 hover:shadow-lg">
                     <input 
                       type="radio" 
@@ -135,6 +137,17 @@ export default function ProfileCompletion() {
               {errors.department && <p className="text-red-500">{errors.department}</p>}
             </div>
             <div className="space-y-2">
+              <label htmlFor="photo" className="text-lg font-semibold">Photo</label>
+              <input 
+                id="photo" 
+                name="photo"
+                type="file" 
+                accept="image/*" 
+                onChange={handleChange}
+                className="w-full p-2 border rounded" 
+              />
+            </div>
+            <div className="space-y-2">
               <label htmlFor="rollNo" className="text-lg font-semibold">Roll No</label>
               <input 
                 id="rollNo" 
@@ -146,38 +159,6 @@ export default function ProfileCompletion() {
                 className="w-full p-2 border rounded" 
               />
               {errors.rollNo && <p className="text-red-500">{errors.rollNo}</p>}
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="email" className="text-lg font-semibold">Email</label>
-              <input 
-                id="email" 
-                name="email"
-                type="email" 
-                value={formData.email}
-                onChange={handleChange}
-                required 
-                className="w-full p-2 border rounded" 
-              />
-              {errors.email && <p className="text-red-500">{errors.email}</p>}
-            </div>
-            <div className="space-y-2">
-              <label className="text-lg font-semibold">Family Income</label>
-              <div className="flex space-x-4">
-                {['Low', 'Medium', 'High'].map((income) => (
-                  <label key={income} className="flex items-center space-x-2 p-3 bg-white rounded-full shadow-md cursor-pointer transition-all duration-200 hover:bg-green-50 hover:shadow-lg">
-                    <input 
-                      type="radio" 
-                      value={income.toLowerCase()} 
-                      name="familyIncome" 
-                      onChange={handleChange}
-                      checked={formData.familyIncome === income.toLowerCase()}
-                      className="text-green-600" 
-                    />
-                    <span>{income}</span>
-                  </label>
-                ))}
-              </div>
-              {errors.familyIncome && <p className="text-red-500">{errors.familyIncome}</p>}
             </div>
             <div className="space-y-2">
               <label htmlFor="addressField1" className="text-lg font-semibold">Address Field 1</label>
@@ -203,6 +184,26 @@ export default function ProfileCompletion() {
                 className="w-full p-2 border rounded" 
               />
             </div>
+            <div className="space-y-2">
+              <label className="text-lg font-semibold">Family Income (Annually)</label>
+              <div className="flex space-x-4">
+                {['Less than 1L', 'More than 1L', 'More than 3L'].map((income) => (
+                  <label key={income} className="flex items-center space-x-2 p-3 bg-white rounded-full shadow-md cursor-pointer transition-all duration-200 hover:bg-green-50 hover:shadow-lg">
+                    <input 
+                      type="radio" 
+                      value={income.toLowerCase()} 
+                      name="familyIncome" 
+                      onChange={handleChange}
+                      checked={formData.familyIncome === income.toLowerCase()}
+                      className="text-green-600" 
+                    />
+                    <span>{income}</span>
+                  </label>
+                ))}
+              </div>
+              {errors.familyIncome && <p className="text-red-500">{errors.familyIncome}</p>}
+            </div>
+         
             <div className="space-y-2">
               <label className="text-lg font-semibold">Residence</label>
               <div className="flex space-x-4">
@@ -241,17 +242,27 @@ export default function ProfileCompletion() {
               </div>
               {errors.gender && <p className="text-red-500">{errors.gender}</p>}
             </div>
+
             <div className="space-y-2">
-              <label htmlFor="photo" className="text-lg font-semibold">Photo (Optional)</label>
-              <input 
-                id="photo" 
-                name="photo"
-                type="file" 
-                accept="image/*" 
-                onChange={handleChange}
-                className="w-full p-2 border rounded" 
-              />
+              <label className="text-lg font-semibold">Extracurricular Activities</label>
+              <div className="flex space-x-4">
+                {['Sports', 'Cultural', 'Tech'].map((activity) => (
+                  <label key={activity} className="flex items-center space-x-2 p-3 bg-white rounded-full shadow-md cursor-pointer transition-all duration-200 hover:bg-purple-50 hover:shadow-lg">
+                    <input 
+                      type="radio" 
+                      value={activity.toLowerCase()} 
+                      name="gender" 
+                      onChange={handleChange}
+                      checked={formData.activity === activity.toLowerCase()}
+                      className="text-purple-600" 
+                    />
+                    <span>{activity}</span>
+                  </label>
+                ))}
+              </div>
+              {errors.activity && <p className="text-red-500">{errors.activity}</p>}
             </div>
+           
             <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200">Complete Profile</button>
           </form>
         </div>
