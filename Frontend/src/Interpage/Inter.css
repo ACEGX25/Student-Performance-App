@@ -1,49 +1,187 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
-/* Custom styles for ProfileCompletion */
-.profile-completion-form {
-  @apply max-w-2xl mx-auto;
+.profile-completion-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: Montserrat, sans-serif;
+  background-image: url('/resources/background.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh; /* Viewport height */
+  font-weight: 500;
 }
 
-.profile-completion-form input[type="file"] {
-  @apply file:mr-4 file:py-2 file:px-4
-    file:rounded-full file:border-0
-    file:text-sm file:font-semibold
-    file:bg-blue-50 file:text-blue-700
-    hover:file:bg-blue-100;
+.profile-completion {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: rgba(74, 144, 226, 0.3);
+  backdrop-filter: none;
 }
 
-/* Custom scrollbar for the form */
-.profile-completion-form::-webkit-scrollbar {
-  width: 8px;
+.header {
+  display: flex;
+  padding: 1.5rem;
+  text-align: start;
 }
 
-.profile-completion-form::-webkit-scrollbar-track {
-  @apply bg-gray-100;
+.title-otp {
+  text-align: center;
+  color: white;
+  font-size: 2.5rem;
+  font-weight: bold;
 }
 
-.profile-completion-form::-webkit-scrollbar-thumb {
-  @apply bg-blue-300 rounded-full;
+.main-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%; /* Full height of the page */
 }
 
-.profile-completion-form::-webkit-scrollbar-thumb:hover {
-  @apply bg-blue-400;
+.form-container {
+  width: 100%;
+  max-width: 800px;
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+  padding-left: 40px;
 }
 
-/* Enhance focus styles for better accessibility */
-input:focus, textarea:focus, button:focus, select:focus {
-  @apply outline-none ring-2 ring-blue-400;
+.glassmorphism-form {
+  background-color: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Responsive font sizes */
-@media (max-width: 640px) {
-  h1 {
-    @apply text-3xl;
+.form-title {
+  color: white;
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+}
+
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-label-otp {
+  color: white;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.form-input {
+  padding: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 0.25rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.button-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.select-button {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.select-button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.select-button.selected {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-color: white;
+}
+
+.error {
+  color: #ff6b6b;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.submit-button {
+  background-color: #4a90e2;
+  color: white;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.submit-button:hover {
+  background-color: #3a7bd5;
+}
+
+.footer {
+  display: flex;
+  background-color: transparent;
+  color: white;
+  padding: 1rem;
+  text-align: center;
+}
+
+.message {
+  text-align: center;
+  color: #4caf50;
+  margin-bottom: 1rem;
+}
+
+/* Scrollbar Styles */
+.form-container::-webkit-scrollbar {
+  width: 6px;
+  display: none;
+}
+
+.form-container::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.form-container::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+.form-container::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    padding: 1rem;
   }
-  h2 {
-    @apply text-2xl;
+
+  .form-container {
+    max-height: none;
+    overflow-y: visible;
   }
 }
+
+#popat{
+  width: 1000px;
+  height: auto;
+  padding-left: 150px;
+}
+
 

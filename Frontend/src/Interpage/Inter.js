@@ -1,20 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import { Eye, EyeOff, User, Mail, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-//import car1 from '../assets/carousel1.gif'
-//import car2 from '../assets/carousel2.gif'
-import car3 from '../assets/carousel3.gif'
-//import car4 from '../assets/carousel4.jpg'
+import car3 from '../assets/rename.png'
 import "./Inter.css";
 
-
 const images = [
-  //{ src: car1, alt: 'Campus Life' },
-  //{ src: car2, alt: 'Students Studying' },
   { src: car3, alt: 'Graduation Ceremony' },
-  //{ src: car4, alt: 'Graduation Ceremony' },
 ];
-
 
 export default function ProfileCompletion() {
   const [currentImage, setCurrentImage] = useState(0);
@@ -37,7 +28,7 @@ export default function ProfileCompletion() {
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentImage((prevImage) => (prevImage + 1) % images.length);
-    }, 5000); // Change image every 5 seconds
+    }, 5000);
 
     return () => clearInterval(timer);
   }, []);
@@ -50,11 +41,17 @@ export default function ProfileCompletion() {
     }));
   };
 
+  const handleButtonSelect = (name, value) => {
+    setFormData(prevData => ({
+      ...prevData,
+      [name]: value
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = {};
 
-    // Perform form validation
     if (!formData.department) newErrors.department = 'Department is required';
     if (!formData.rollNo) newErrors.rollNo = 'Roll No is required';
     if (!formData.email) newErrors.email = 'Email is required';
@@ -66,7 +63,7 @@ export default function ProfileCompletion() {
 
     if (Object.keys(newErrors).length === 0) {
       try {
-        const url = 'http://localhost:8080/api/profile/complete'; // Replace with your actual API endpoint
+        const url = 'http://localhost:8080/api/profile/complete';
         const formDataToSend = new FormData();
         
         for (const key in formData) {
@@ -82,10 +79,8 @@ export default function ProfileCompletion() {
           const data = await response.json();
           setMessage('Profile completed successfully!');
           
-          // Assuming the API returns the username in the response
-          const username = data.username || formData.rollNo; // Fallback to rollNo if username is not provided
+          const username = data.username || formData.rollNo;
           
-          // Navigate to the student dashboard
           navigate(`/student/dashboard/${username}`);
         } else {
           const result = await response.json();
@@ -100,195 +95,182 @@ export default function ProfileCompletion() {
   };
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-gray-100">
-      {/* Header */}
-      <header className="bg-blue-600 text-white p-6">
-        <div className="container mx-auto text-center">
-          <h1 className="text-4xl font-extrabold tracking-tight">
-            <span className="inline-block transform hover:scale-110 transition-transform duration-200">EduTrack</span>
-          </h1>
-        </div>
-      </header>
+    <div className="profile-completion-container">
+      <div className="profile-completion">
+        <header className="header">
+          <div className="container">
+            <h1 className="title-otp">EduTrack</h1>
+          </div>
+        </header>
 
-      {/* Main content */}
-      <main className="flex-grow flex overflow-hidden">
-        {/* Left side - Profile Completion Form */}
-        <div className="w-full md:w-1/2 p-8 overflow-y-auto">
-          <h2 className="text-3xl font-bold mb-6">Complete Your Profile</h2>
-          {message && <div className="mb-4 text-center text-green-600">{message}</div>}
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            <div className="space-y-2">
-              <label className="text-lg font-semibold">Department</label>
-              <div className="grid grid-cols-3 gap-4">
-                {['Computer Science', 'Information Technology', 'Mechanical Engineering', 'Civil Engineering', 'Electronics and Telecommunication'].map((dept) => (
-                  <label key={dept} className="flex items-center space-x-2 p-4 bg-white rounded-lg shadow-md cursor-pointer transition-all duration-200 hover:bg-blue-50 hover:shadow-lg">
-                    <input 
-                      type="radio" 
-                      value={dept} 
-                      name="department" 
-                      onChange={handleChange}
-                      checked={formData.department === dept}
-                      className="text-blue-600" 
-                    />
-                    <span>{dept}</span>
-                  </label>
-                ))}
-              </div>
-              {errors.department && <p className="text-red-500">{errors.department}</p>}
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="photo" className="text-lg font-semibold">Photo</label>
-              <input 
-                id="photo" 
-                name="photo"
-                type="file" 
-                accept="image/*" 
-                onChange={handleChange}
-                className="w-full p-2 border rounded" 
-              />
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="rollNo" className="text-lg font-semibold">Roll No</label>
-              <input 
-                id="rollNo" 
-                name="rollNo"
-                type="text" 
-                value={formData.rollNo}
-                onChange={handleChange}
-                required 
-                className="w-full p-2 border rounded" 
-              />
-              {errors.rollNo && <p className="text-red-500">{errors.rollNo}</p>}
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="addressField1" className="text-lg font-semibold">Address Field 1</label>
-              <input 
-                id="addressField1" 
-                name="addressField1"
-                type="text" 
-                value={formData.addressField1}
-                onChange={handleChange}
-                required 
-                className="w-full p-2 border rounded" 
-              />
-              {errors.addressField1 && <p className="text-red-500">{errors.addressField1}</p>}
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="addressField2" className="text-lg font-semibold">Address Field 2</label>
-              <input 
-                id="addressField2" 
-                name="addressField2"
-                type="text" 
-                value={formData.addressField2}
-                onChange={handleChange}
-                className="w-full p-2 border rounded" 
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-lg font-semibold">Family Income (Annually)</label>
-              <div className="flex space-x-4">
-                {['Less than 1L', 'More than 1L', 'More than 3L'].map((income) => (
-                  <label key={income} className="flex items-center space-x-2 p-3 bg-white rounded-full shadow-md cursor-pointer transition-all duration-200 hover:bg-green-50 hover:shadow-lg">
-                    <input 
-                      type="radio" 
-                      value={income.toLowerCase()} 
-                      name="familyIncome" 
-                      onChange={handleChange}
-                      checked={formData.familyIncome === income.toLowerCase()}
-                      className="text-green-600" 
-                    />
-                    <span>{income}</span>
-                  </label>
-                ))}
-              </div>
-              {errors.familyIncome && <p className="text-red-500">{errors.familyIncome}</p>}
-            </div>
-         
-            <div className="space-y-2">
-              <label className="text-lg font-semibold">Residence</label>
-              <div className="flex space-x-4">
-                {['Hostel', 'Paying Guest', 'Native'].map((res) => (
-                  <label key={res} className="flex items-center space-x-2 p-3 bg-white rounded-full shadow-md cursor-pointer transition-all duration-200 hover:bg-green-50 hover:shadow-lg">
-                    <input 
-                      type="radio" 
-                      value={res.toLowerCase()} 
-                      name="residence" 
-                      onChange={handleChange}
-                      checked={formData.residence === res.toLowerCase()}
-                      className="text-green-600" 
-                    />
-                    <span>{res}</span>
-                  </label>
-                ))}
-              </div>
-              {errors.residence && <p className="text-red-500">{errors.residence}</p>}
-            </div>
-            <div className="space-y-2">
-              <label className="text-lg font-semibold">Gender</label>
-              <div className="flex space-x-4">
-                {['Male', 'Female', 'Other'].map((gender) => (
-                  <label key={gender} className="flex items-center space-x-2 p-3 bg-white rounded-full shadow-md cursor-pointer transition-all duration-200 hover:bg-purple-50 hover:shadow-lg">
-                    <input 
-                      type="radio" 
-                      value={gender.toLowerCase()} 
-                      name="gender" 
-                      onChange={handleChange}
-                      checked={formData.gender === gender.toLowerCase()}
-                      className="text-purple-600" 
-                    />
-                    <span>{gender}</span>
-                  </label>
-                ))}
-              </div>
-              {errors.gender && <p className="text-red-500">{errors.gender}</p>}
-            </div>
+        <div className="main-content">
+          <div className="form-container">
+            <div className="glassmorphism-form">
+              <h2 className="form-title">Complete Your Profile</h2>
+              {message && <div className="message">{message}</div>}
+              <form className="profile-form" onSubmit={handleSubmit}>
+                <div className="form-group">
+                  <label className="form-label-otp-otp">Department</label>
+                  <div className="button-group">
+                    {['Computer Science', 'Information Technology', 'Mechanical Engineering', 'Civil Engineering', 'Electronics and Telecommunication'].map((dept) => (
+                      <button
+                        key={dept}
+                        type="button"
+                        className={`select-button ${formData.department === dept ? 'selected' : ''}`}
+                        onClick={() => handleButtonSelect('department', dept)}
+                      >
+                        {dept}
+                      </button>
+                    ))}
+                  </div>
+                  {errors.department && <p className="error">{errors.department}</p>}
+                </div>
 
-            <div className="space-y-2">
-              <label className="text-lg font-semibold">Extracurricular Activities</label>
-              <div className="flex space-x-4">
-                {['Sports', 'Cultural', 'Tech'].map((activity) => (
-                  <label key={activity} className="flex items-center space-x-2 p-3 bg-white rounded-full shadow-md cursor-pointer transition-all duration-200 hover:bg-purple-50 hover:shadow-lg">
-                    <input 
-                      type="radio" 
-                      value={activity.toLowerCase()} 
-                      name="gender" 
-                      onChange={handleChange}
-                      checked={formData.activity === activity.toLowerCase()}
-                      className="text-purple-600" 
-                    />
-                    <span>{activity}</span>
-                  </label>
-                ))}
-              </div>
-              {errors.activity && <p className="text-red-500">{errors.activity}</p>}
-            </div>
-           
-            <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200">Complete Profile</button>
-          </form>
-        </div>
+                <div className="form-group">
+                  <label htmlFor="photo" className="form-label-otp">Photo</label>
+                  <input 
+                    id="photo" 
+                    name="photo"
+                    type="file" 
+                    accept="image/*" 
+                    onChange={handleChange}
+                    className="form-input"
+                  />
+                </div>
 
-        {/* Right side - Photo Carousel */}
-        <div className="hidden md:block w-1/2 relative overflow-hidden">
+                <div className="form-group">
+                  <label htmlFor="rollNo" className="form-label-otp">Roll No</label>
+                  <input 
+                    id="rollNo" 
+                    name="rollNo"
+                    type="text" 
+                    value={formData.rollNo}
+                    onChange={handleChange}
+                    required 
+                    className="form-input"
+                  />
+                  {errors.rollNo && <p className="error">{errors.rollNo}</p>}
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="addressField1" className="form-label-otp">Address Field 1</label>
+                  <input 
+                    id="addressField1" 
+                    name="addressField1"
+                    type="text" 
+                    value={formData.addressField1}
+                    onChange={handleChange}
+                    required 
+                    className="form-input"
+                  />
+                  {errors.addressField1 && <p className="error">{errors.addressField1}</p>}
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="addressField2" className="form-label-otp">Address Field 2</label>
+                  <input 
+                    id="addressField2" 
+                    name="addressField2"
+                    type="text" 
+                    value={formData.addressField2}
+                    onChange={handleChange}
+                    className="form-input"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label-otp">Family Income (Annually)</label>
+                  <div className="button-group">
+                    {['Less than 1L', 'More than 1L', 'More than 3L'].map((income) => (
+                      <button
+                        key={income}
+                        type="button"
+                        className={`select-button ${formData.familyIncome === income.toLowerCase() ? 'selected' : ''}`}
+                        onClick={() => handleButtonSelect('familyIncome', income.toLowerCase())}
+                      >
+                        {income}
+                      </button>
+                    ))}
+                  </div>
+                  {errors.familyIncome && <p className="error">{errors.familyIncome}</p>}
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label-otp">Residence</label>
+                  <div className="button-group">
+                    {['Hostel', 'Paying Guest', 'Native'].map((res) => (
+                      <button
+                        key={res}
+                        type="button"
+                        className={`select-button ${formData.residence === res.toLowerCase() ? 'selected' : ''}`}
+                        onClick={() => handleButtonSelect('residence', res.toLowerCase())}
+                      >
+                        {res}
+                      </button>
+                    ))}
+                  </div>
+                  {errors.residence && <p className="error">{errors.residence}</p>}
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label-otp">Gender</label>
+                  <div className="button-group">
+                    {['Male', 'Female', 'Other'].map((gender) => (
+                      <button
+                        key={gender}
+                        type="button"
+                        className={`select-button ${formData.gender === gender.toLowerCase() ? 'selected' : ''}`}
+                        onClick={() => handleButtonSelect('gender', gender.toLowerCase())}
+                      >
+                        {gender}
+                      </button>
+                    ))}
+                  </div>
+                  {errors.gender && <p className="error">{errors.gender}</p>}
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label-otp">Extracurricular Activities</label>
+                  <div className="button-group">
+                    {['Sports', 'Cultural', 'Tech'].map((activity) => (
+                      <button
+                        key={activity}
+                        type="button"
+                        className={`select-button ${formData.activity === activity.toLowerCase() ? 'selected' : ''}`}
+                        onClick={() => handleButtonSelect('activity', activity.toLowerCase())}
+                      >
+                        {activity}
+                      </button>
+                    ))}
+                  </div>
+                  {errors.activity && <p className="error">{errors.activity}</p>}
+                </div>
+
+                <button type="submit" className="submit-button">Complete Profile</button>
+              </form>
+            </div>
+          </div>
+
+          <div className="image-carousel">
             {images.map((image, index) => (
               <img
+              id='popat'
                 key={index}
                 src={image.src}
                 alt={image.alt}
-                className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-1000 ${
-                  index === currentImage ? 'opacity-100' : 'opacity-0'
-                }`}
+                className={`carousel-image ${index === currentImage ? 'active' : ''}`}
               />
             ))}
           </div>
-
-       </main>
-
-      {/* Footer */}
-      <footer className="bg-gray-800 text-white p-4">
-        <div className="container mx-auto text-center">
-          <p>&copy; 2025 EduTrack. All rights reserved.</p>
         </div>
-      </footer>
+
+        <footer className="footer">
+          <div className="container">
+            <p>&copy; 2025 EduTrack. All rights reserved.</p>
+          </div>
+        </footer>
+      </div>
     </div>
   );
 }
+
