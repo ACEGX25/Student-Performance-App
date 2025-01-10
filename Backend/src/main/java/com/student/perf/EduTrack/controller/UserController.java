@@ -36,9 +36,6 @@ public class UserController {
             if (user.getName() == null || user.getName().trim().isEmpty()) {
                 return ResponseEntity.badRequest().body(Map.of("error", "Name is required"));
             }
-            if (user.getUsername() == null || user.getUsername().trim().isEmpty()) {
-                return ResponseEntity.badRequest().body(Map.of("error", "Username is required"));
-            }
             if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {
                 return ResponseEntity.badRequest().body(Map.of("error", "Email is required"));
             }

@@ -37,19 +37,36 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         final String token = authHeader.substring(7);
-        final String username = jwtUtil.extractUsername(token);
+
+        String username = null;
+        try {
+            // Extract username from token
+            username = jwtUtil.extractUsername(token);
+        } catch (Exception e) {
+            System.err.println("JWT Token parsing failed: " + e.getMessage());
+        }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            try {
+                // Load user details
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-            if (jwtUtil.validateToken(token, userDetails.getUsername())) {
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                // Validate the token
+                if (jwtUtil.validateToken(token, userDetails.getUsername())) {
+                    UsernamePasswordAuthenticationToken authToken =
+                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                    // Set the authentication in the SecurityContext
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                } else {
+                    System.err.println("JWT Token validation failed for user: " + username);
+                }
+            } catch (Exception e) {
+                System.err.println("User authentication failed: " + e.getMessage());
             }
         }
+
         chain.doFilter(request, response);
     }
 }

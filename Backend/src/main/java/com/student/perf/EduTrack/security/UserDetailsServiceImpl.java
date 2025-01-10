@@ -61,17 +61,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             return new org.springframework.security.core.userdetails.User(admin.getUsername(), admin.getPassword(), authorities);
         }
 
-//        // Fetch student by username from MongoDB
-//        Student student = studentRepository.findByUsername(username)
-//                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
-//
-//        // Return UserDetails object for Spring Security
-//        return User.builder()
-//                .username(student.getUsername())
-//                .password("{noop}password") // Remove {noop} in production; encode passwords!
-//                .roles("STUDENT") // Assign role
-//                .build();
         // If no user is found in any repository, throw an exception
-        throw new UsernameNotFoundException("User not found");
+        throw new UsernameNotFoundException("User not found: " + username);
+
+
     }
 }

@@ -2,11 +2,15 @@ package com.student.perf.EduTrack.model;
 
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 
 @Data
+@Getter
+@Setter
 @Document(collection = "staff")
 public class Staff extends User {
 

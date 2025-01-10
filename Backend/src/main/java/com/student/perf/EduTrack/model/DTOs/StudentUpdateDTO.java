@@ -1,11 +1,7 @@
 package com.student.perf.EduTrack.model.DTOs;
 
 public class StudentUpdateDTO {
-    private String username;
-    private String password;   // Optional
     private int rollno;                            // Student Roll Number
-    private String name;                           // Full Name
-    private String email;                          // Email address
     private String department;                     // Department (e.g., CS)
     private String extracurricular_activities;      // Participation in extracurricular activities (Yes/No)
     private int sleep_hours;                        // Hours of sleep per day

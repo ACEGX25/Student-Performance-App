@@ -42,15 +42,25 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Enable CORS
                 .csrf(csrf -> csrf.disable()) // Disable CSRF for API
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/auth/**").permitAll() // Allow login and register endpoints
+                        .requestMatchers("/api/auth/**").permitAll() // Allow login, register, and logout
                         .requestMatchers("/api/student/**").hasAuthority("student")
                         .requestMatchers("/api/staff/**").hasAuthority("staff")
                         .requestMatchers("/api/admin/**").hasAuthority("admin")
                         .anyRequest().authenticated()               // Secure other endpoints
                 )
+                .logout(logout -> logout
+                        .logoutUrl("/api/auth/logout")  // Logout endpoint
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            response.setStatus(200); // Send HTTP 200 status on success
+                            response.getWriter().write("Logged out successfully!");
+                        })
+                        .invalidateHttpSession(true)   // Invalidate session
+                        .deleteCookies("JSESSIONID")   // Remove cookies
+                )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
+
 
     // Configure CORS policy
     @Bean

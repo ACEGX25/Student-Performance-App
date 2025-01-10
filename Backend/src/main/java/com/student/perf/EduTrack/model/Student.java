@@ -25,9 +25,7 @@ public class Student extends User{
     private String learning_disabilities;           // Presence of learning disabilities (Yes/No)
     private String distance_from_home;               // Distance from home (Near/Far)
     private String gender;                         // Gender (Male/Female/Other)
-    private int exam_score;
-    private String Address;
-    // Exam score
+    private int exam_score;                         // Exam score
 
     //
 
@@ -150,8 +148,4 @@ public class Student extends User{
     public void setExam_score(int exam_score) {
         this.exam_score = exam_score;
     }
-
-    public String getAddress() {return Address;}
-
-    public void setAddress(String address) {Address = address;}
 }

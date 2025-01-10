@@ -25,48 +25,69 @@ public class StudentController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @PutMapping("/fill-details/${username}")
-    public ResponseEntity<?> filldetials(
-            @RequestBody Student filldata,
+    // POST Request to Add Profile Details
+    @PostMapping("/profile/add")
+    public ResponseEntity<?> addProfileDetails(
+            @RequestBody Student newProfileDetails,
             @AuthenticationPrincipal UserDetails userDetails) {
-
         try {
-            // Retrieve the current logged-in student
+            // Fetch the currently logged-in student's details
             Student student = studentRepository.findByUsername(userDetails.getUsername())
                     .orElseThrow(() -> new RuntimeException("Student not found"));
 
-            // Update only non-null fields
-            if (filldata.getRollno() != 0) {
-                student.setRollno(filldata.getRollno());
+            // Add only the fields that are not already set
+            if (newProfileDetails.getRollno() != 0 && student.getRollno() == 0) {
+                student.setRollno(newProfileDetails.getRollno());
             }
-            if (filldata.getDepartment() != null) {
-                student.setDepartment(filldata.getDepartment());
+            if (newProfileDetails.getDepartment() != null && student.getDepartment() == null) {
+                student.setDepartment(newProfileDetails.getDepartment());
             }
-
-            if (filldata.getAddress() != null) {
-                student.setAddress(filldata.getAddress());
+            if (newProfileDetails.getExtracurricular_activities() != null && student.getExtracurricular_activities() == null) {
+                student.setExtracurricular_activities(newProfileDetails.getExtracurricular_activities());
             }
-
-            if (filldata.getFamily_income() != null) {
-                student.setFamily_income(filldata.getFamily_income());
+            if (newProfileDetails.getSleep_hours() != 0 && student.getSleep_hours() == 0) {
+                student.setSleep_hours(newProfileDetails.getSleep_hours());
             }
-
-            if (filldata.getDistance_from_home() != null) {
-                student.setDistance_from_home(filldata.getDistance_from_home());
+            if (newProfileDetails.getPrevious_scores() != 0 && student.getPrevious_scores() == 0) {
+                student.setPrevious_scores(newProfileDetails.getPrevious_scores());
+            }
+            if (newProfileDetails.getTutoring_sessions() != 0 && student.getTutoring_sessions() == 0) {
+                student.setTutoring_sessions(newProfileDetails.getTutoring_sessions());
+            }
+            if (newProfileDetails.getFamily_income() != null && student.getFamily_income() == null) {
+                student.setFamily_income(newProfileDetails.getFamily_income());
+            }
+            if (newProfileDetails.getTeacher_review() != null && student.getTeacher_review() == null) {
+                student.setTeacher_review(newProfileDetails.getTeacher_review());
+            }
+            if (newProfileDetails.getPhysical_activity() != 0 && student.getPhysical_activity() == 0) {
+                student.setPhysical_activity(newProfileDetails.getPhysical_activity());
+            }
+            if (newProfileDetails.getLearning_disabilities() != null && student.getLearning_disabilities() == null) {
+                student.setLearning_disabilities(newProfileDetails.getLearning_disabilities());
+            }
+            if (newProfileDetails.getDistance_from_home() != null && student.getDistance_from_home() == null) {
+                student.setDistance_from_home(newProfileDetails.getDistance_from_home());
+            }
+            if (newProfileDetails.getGender() != null && student.getGender() == null) {
+                student.setGender(newProfileDetails.getGender());
+            }
+            if (newProfileDetails.getExam_score() != 0 && student.getExam_score() == 0) {
+                student.setExam_score(newProfileDetails.getExam_score());
             }
 
             // Save the updated student object
-            Student created = studentRepository.save(student);
+            Student updatedStudent = studentRepository.save(student);
 
-            System.out.println("Student details updated successfully for username: " + userDetails.getUsername());
+            System.out.println("Additional profile details added for username: " + userDetails.getUsername());
 
-            return ResponseEntity.ok(created);
+            return ResponseEntity.ok(updatedStudent);
 
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
-
     }
+
 
     // Secure GET Request for Student Dashboard
     @GetMapping("/dashboard/{username}")
