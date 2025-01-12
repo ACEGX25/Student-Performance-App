@@ -1,16 +1,24 @@
 package com.student.perf.EduTrack.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
 @Data
+@Getter
+@Setter
 @Document(collection = "student-info") // MongoDB collection name
 public class Student extends User{
 
     private int rollno;                            // Student Roll Number
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date date_of_birth;                    // Date of birth
     private String department;                     // Department (e.g., CS)
     private int hours_studied;                      // Total hours studied

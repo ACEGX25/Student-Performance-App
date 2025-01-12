@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,6 +21,9 @@ public class StaffController {
 
     @Autowired
     private StaffRepository staffRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     // GET Request for Staff Dashboard
     @GetMapping("/dashboard/{username}")
@@ -65,12 +69,42 @@ public class StaffController {
             staff.setEmail(updatedDetails.getEmail());
         }
         if (updatedDetails.getPassword() != null) {
-            staff.setPassword(updatedDetails.getPassword());
+            // Encode the password before saving it
+            String encodedPassword = passwordEncoder.encode(updatedDetails.getPassword());
+            staff.setPassword(encodedPassword);
+        }
+        if (updatedDetails.getDepartment() != null) {
+            staff.setDepartment(updatedDetails.getDepartment());
+        }
+        if (updatedDetails.getExpertise() != null) {
+            staff.setExpertise(updatedDetails.getExpertise());
+        }
+        if (updatedDetails.getExperience() != 0) {
+            staff.setExperience(updatedDetails.getExperience());
+        }
+        if (updatedDetails.getQualification() != null) {
+            staff.setQualification(updatedDetails.getQualification());
+        }
+        if (updatedDetails.getDesignation() != null) {
+            staff.setDesignation(updatedDetails.getDesignation());
+        }
+        if (updatedDetails.getArea_of_interest() != null) {
+            staff.setArea_of_interest(updatedDetails.getArea_of_interest());
+        }
+        if (updatedDetails.getAddress() != null) {
+            staff.setAddress(updatedDetails.getAddress());
+        }
+        if (updatedDetails.getDate_of_birth() != null) {
+            staff.setDate_of_birth(updatedDetails.getDate_of_birth());
+        }
+        if (updatedDetails.getSub_feedback() != 0) {
+            staff.setSub_feedback(updatedDetails.getSub_feedback());
         }
 
-        // Save updated staff object
-        Staff updatedStaff = staffRepository.save(staff);
+        // Save the updated staff details
+        staffRepository.save(staff);
 
-        return ResponseEntity.ok(updatedStaff);
+        return ResponseEntity.ok(staff);
     }
+
 }
