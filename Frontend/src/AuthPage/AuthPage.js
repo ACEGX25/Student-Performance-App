@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, User, Lock, Mail } from 'lucide-react';
 import './AuthPage.css';
+import axios from 'axios';
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -63,7 +64,10 @@ const AuthPage = () => {
             if (data.role === 'Student') navigate(`/student/dashboard/${username}`);
             else if (data.role === 'staff') navigate(`/teacher/dashboard`);
             else if (data.role === 'admin') navigate('/admin-dashboard');
-            else navigate('/fill-details');
+            else
+            {
+              navigate('/fill-details');
+            }
 
             window.location.reload();
           } else {

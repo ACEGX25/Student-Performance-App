@@ -1,0 +1,342 @@
+.edutrack-admin {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f8f9fa;
+    font-family: Arial, sans-serif;
+}
+
+/* Sidebar Styles */
+.edutrack-admin__sidebar {
+    width: 250px;
+    background-color: #1e2632;
+    color: white;
+    padding: 20px;
+}
+
+.edutrack-admin__logo {
+    padding: 20px 0;
+}
+
+.edutrack-admin__logo h1 {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.edutrack-admin__logo span {
+    color: #6c5ce7;
+}
+
+.edutrack-admin__nav ul {
+    list-style: none;
+    padding: 0;
+}
+
+.edutrack-admin__nav-item {
+    margin: 5px 0;
+}
+
+.edutrack-admin__nav-button {
+    width: 100%;
+    padding: 12px 15px;
+    background: none;
+    border: none;
+    color: white;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background-color 0.3s;
+}
+
+.edutrack-admin__nav-item--active .edutrack-admin__nav-button {
+    background-color: rgba(108, 92, 231, 0.1);
+    color: #6c5ce7;
+}
+
+.edutrack-admin__nav-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.edutrack-admin__dropdown-arrow {
+    margin-left: auto;
+    font-size: 10px;
+}
+
+.edutrack-admin__dropdown {
+    list-style: none;
+    padding-left: 30px;
+    margin-top: 5px;
+}
+
+.edutrack-admin__dropdown-item {
+    padding: 8px 15px;
+    color: #a0aec0;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.edutrack-admin__dropdown-item:hover {
+    color: #ffffff;
+}
+
+.edutrack-admin__icon {
+    margin-right: 10px;
+}
+
+/* Main Content Styles */
+.edutrack-admin__main {
+    flex: 1;
+    padding: 30px;
+}
+
+.edutrack-admin__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: #6c5ce7;
+    border-radius: 12px;
+    color: white;
+}
+
+.edutrack-admin__create-btn {
+    background-color: white;
+    color: #6c5ce7;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+/* Quick Overlook Section */
+.edutrack-admin__quick-overlook {
+    background-color: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.edutrack-admin__table-container {
+    overflow-x: auto;
+}
+
+.edutrack-admin__table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.edutrack-admin__table th,
+.edutrack-admin__table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #edf2f7;
+}
+
+.edutrack-admin__table th {
+    color: #718096;
+    font-weight: 500;
+}
+
+.edutrack-admin__event-icon {
+    margin-right: 10px;
+    font-size: 20px;
+}
+
+.edutrack-admin__priority {
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+}
+
+.edutrack-admin__priority--medium {
+    background-color: #fef3c7;
+    color: #d97706;
+}
+
+.edutrack-admin__priority--high {
+    background-color: #fee2e2;
+    color: #dc2626;
+}
+
+.edutrack-admin__staff-avatars {
+    display: flex;
+    align-items: center;
+}
+
+.edutrack-admin__staff-avatar {
+    width: 30px;
+    height: 30px;
+    background-color: #6c5ce7;
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    margin-right: -10px;
+}
+
+.edutrack-admin__progress-bar {
+    width: 100px;
+    height: 8px;
+    background-color: #edf2f7;
+    border-radius: 4px;
+    position: relative;
+}
+
+.edutrack-admin__progress {
+    height: 100%;
+    background-color: #6c5ce7;
+    border-radius: 4px;
+}
+
+.edutrack-admin__view-all {
+    display: block;
+    text-align: center;
+    color: #6c5ce7;
+    text-decoration: none;
+    margin-top: 20px;
+}
+
+/* Bottom Sections */
+.edutrack-admin__bottom-sections {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+.edutrack-admin__attendance,
+.edutrack-admin__professors {
+    background-color: white;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.edutrack-admin__section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.edutrack-admin__more-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    color: #718096;
+}
+
+.edutrack-admin__attendance-chart {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+}
+
+.edutrack-admin__chart-placeholder {
+    width: 200px;
+    height: 200px;
+}
+
+.edutrack-admin__circular-chart {
+    width: 100%;
+    height: 100%;
+}
+
+.edutrack-admin__circle-bg {
+    fill: none;
+    stroke: #edf2f7;
+    stroke-width: 3.8;
+}
+
+.edutrack-admin__circle {
+    fill: none;
+    stroke: #6c5ce7;
+    stroke-width: 2.8;
+    stroke-linecap: round;
+    animation: progress 1s ease-out forwards;
+}
+
+@keyframes progress {
+    0% {
+        stroke-dasharray: 0 100;
+    }
+}
+
+.edutrack-admin__percentage {
+    fill: #6c5ce7;
+    font-size: 0.5em;
+    text-anchor: middle;
+}
+
+/* Staff List Styles */
+.edutrack-admin__staff-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.edutrack-admin__staff-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #edf2f7;
+}
+
+.edutrack-admin__staff-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.edutrack-admin__avatar {
+    width: 40px;
+    height: 40px;
+    background-color: #6c5ce7;
+    border-radius: 50%;
+}
+
+.edutrack-admin__details h3 {
+    margin: 0;
+    font-size: 14px;
+}
+
+.edutrack-admin__details p {
+    margin: 0;
+    color: #718096;
+    font-size: 12px;
+}
+
+.edutrack-admin__role,
+.edutrack-admin__last-activity {
+    color: #718096;
+    font-size: 14px;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .edutrack-admin__bottom-sections {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .edutrack-admin {
+        flex-direction: column;
+    }
+
+    .edutrack-admin__sidebar {
+        width: 100%;
+    }
+
+    .edutrack-admin__main {
+        padding: 15px;
+    }
+}
+

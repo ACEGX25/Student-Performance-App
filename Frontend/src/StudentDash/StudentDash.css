@@ -7,6 +7,15 @@
 #daddy {
   font-family: 'Montserrat', sans-serif;
   background-color: #ffffff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-image: url('/resources/studash.png');
+  background-size: cover;
+  /*background-position: center;*/
+  background-repeat: no-repeat;
+  height: 110vh; /* Viewport height */
+  font-weight: 500;
 }
 
 /* Custom styles for the header */
@@ -411,4 +420,12 @@ footer {
 .welcome-header {
   position: relative;
   overflow: hidden;
+}
+
+.glass {
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
 }
