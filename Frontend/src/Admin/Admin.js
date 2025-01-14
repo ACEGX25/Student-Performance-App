@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './Admin.css';
+import {Link} from 'react-router-dom'
 
 const Admin = () => {
     const [openDropdown, setOpenDropdown] = useState(null);
@@ -109,39 +110,27 @@ const Admin = () => {
                             {openDropdown === 'create' && (
                                 <ul className="edutrack-admin__dropdown">
                                     <li className="edutrack-admin__dropdown-item">Exam & Schedule</li>
-                                    <li className="edutrack-admin__dropdown-item">Timetable</li>
+                                    <li className="edutrack-admin__dropdown-item"><Link to="Assist/Timetable">Timetable</Link></li>
                                 </ul>
                             )}
                         </li>
                         <li className="edutrack-admin__nav-item">
                             <button
                                 className="edutrack-admin__nav-button"
-                                onClick={() => toggleDropdown('search')}
+
                             >
                                 <i className="edutrack-admin__icon">🔍</i> Search
-                                <span className="edutrack-admin__dropdown-arrow">▼</span>
+
                             </button>
-                            {openDropdown === 'search' && (
-                                <ul className="edutrack-admin__dropdown">
-                                    <li className="edutrack-admin__dropdown-item">Student</li>
-                                    <li className="edutrack-admin__dropdown-item">Staff</li>
-                                </ul>
-                            )}
+
                         </li>
                         <li className="edutrack-admin__nav-item">
                             <button
                                 className="edutrack-admin__nav-button"
-                                onClick={() => toggleDropdown('approve')}
+
                             >
                                 <i className="edutrack-admin__icon">✓</i> Approve
-                                <span className="edutrack-admin__dropdown-arrow">▼</span>
                             </button>
-                            {openDropdown === 'approve' && (
-                                <ul className="edutrack-admin__dropdown">
-                                    <li className="edutrack-admin__dropdown-item">Application</li>
-                                    <li className="edutrack-admin__dropdown-item">Marks</li>
-                                </ul>
-                            )}
                         </li>
                     </ul>
                 </nav>

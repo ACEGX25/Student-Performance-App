@@ -8,6 +8,7 @@ import UserProfile from './UserProfile/UserProfile';
 import TeacherDash from './TeacherDash/TeacherDash'
 import Inter from './Interpage/Inter'
 import Admin from './Admin/Admin'
+import Time from './Admin/Assist/Timetable'
 
 // Component for Handling Routes
 function AnimatedRoutes() {
@@ -18,6 +19,7 @@ function AnimatedRoutes() {
       <Route path="/" element={<HomePage />} />
       <Route path="/authpage" element={<AuthPage />} />
         <Route path="/admin-dashboard" element={<Admin />}/>
+        <Route path="/admin-dashboard/Assist/Timetable" element={< Time/>} />
       <Route path="/fill-details" element={< Inter/>} />
       <Route path="/student/dashboard/:username" element={<StudentDash />} />
       <Route path="/student/profile/:username" element={<UserProfile />} />
