@@ -21,7 +21,7 @@ function AnimatedRoutes() {
       <Route path="/fill-details" element={< Inter/>} />
       <Route path="/student/dashboard/:username" element={<StudentDash />} />
       <Route path="/student/profile/:username" element={<UserProfile />} />
-      <Route path="/teacher/dashboard" element={<TeacherDash />}/>
+      <Route path="/teacher/dashboard/:username" element={<TeacherDash />}/>
     </Routes>
   );
 }

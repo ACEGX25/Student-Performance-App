@@ -79,12 +79,24 @@ const StudentDash = () => {
   if (error) return <div className="error">{error}</div>;
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100" id='daddy'>
-      <header className="app-header text-white p-4">
-        <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold">EduTrack</h1>
-          <nav className={`md:flex space-x-4 ${isMenuOpen ? 'block' : 'hidden'}`}>
-            <a href="#" className="block md:inline-block py-2 hover:text-blue-200">Dashboard</a>
+      <div className="min-h-screen flex flex-col bg-gray-100" id='daddy'>
+        <ul class="circles">
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+        </ul>
+  <header className="app-header text-white p-4">
+    <div className="container mx-auto flex justify-between items-center">
+      <h1 className="text-2xl font-bold">EduTrack</h1>
+      <nav className={`md:flex space-x-4 ${isMenuOpen ? 'block' : 'hidden'}`}>
+        <a href="#" className="block md:inline-block py-2 hover:text-blue-200">Dashboard</a>
             <a href="#" className="block md:inline-block py-2 hover:text-blue-200">Exams</a>
             <a href="#" className="block md:inline-block py-2 hover:text-blue-200">Assignments</a>
             <a href="#" className="block md:inline-block py-2 hover:text-blue-200">Results</a>
