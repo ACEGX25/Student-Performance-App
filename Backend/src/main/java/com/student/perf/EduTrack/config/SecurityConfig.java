@@ -46,6 +46,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/student/**").hasAuthority("student")
                         .requestMatchers("/api/staff/**").hasAuthority("staff")
                         .requestMatchers("/api/admin/**").hasAuthority("admin")
+                        .requestMatchers("/assignments/**").hasAuthority("staff")
                         .anyRequest().authenticated()               // Secure other endpoints
                 )
                 .logout(logout -> logout

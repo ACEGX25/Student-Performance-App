@@ -55,5 +55,10 @@ public class AssignmentService {
         ObjectId objectId = new ObjectId(fileId);
         return gridFSBucket.openDownloadStream(objectId);
     }
+
+    // Delete Assignment
+    public void deleteAssignment(String fileId) {
+        gridFSBucket.delete(new ObjectId(fileId));
+    }
 }
 

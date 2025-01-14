@@ -4,6 +4,7 @@ import com.student.perf.EduTrack.service.AssignmentService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -23,6 +24,7 @@ public class AssignmentController {
 
     // Existing upload endpoint
     @PostMapping("/upload")
+    @PreAuthorize("hasRole('staff')")
     public ResponseEntity<String> uploadAssignment(@RequestParam("file") MultipartFile file) {
         try {
             String fileId = assignmentService.uploadAssignment(file);
@@ -35,6 +37,7 @@ public class AssignmentController {
 
     // New endpoint to retrieve the file
     @GetMapping("/download/{fileId}")
+    @PreAuthorize("hasRole('staff')")
     public ResponseEntity<InputStreamResource> downloadAssignment(@PathVariable("fileId") String fileId) {
         try {
             InputStream fileStream = assignmentService.getFile(fileId);
@@ -51,6 +54,18 @@ public class AssignmentController {
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(null); // File not found or error retrieving file
+        }
+    }
+
+    // Delete Assignment (for STAFF)
+    @DeleteMapping("/delete/{fileId}")
+    @PreAuthorize("hasRole('staff')")
+    public ResponseEntity<String> deleteAssignment(@PathVariable("fileId") String fileId) {
+        try {
+            assignmentService.deleteAssignment(fileId); // Implement this method in service
+            return ResponseEntity.ok("Assignment deleted successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error deleting assignment: " + e.getMessage());
         }
     }
 }
