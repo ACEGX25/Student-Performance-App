@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, User, Lock, Mail } from 'lucide-react';
 import './AuthPage.css';
-import axios from 'axios';
+
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);

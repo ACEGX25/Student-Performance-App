@@ -3,7 +3,7 @@ import {
     Briefcase,
     Award,
     Book,
-    Gift,
+    Star,
     MapPin,
     Calendar,
     BarChart,
@@ -67,21 +67,28 @@ const TeacherDashboard = () => {
 
             <main className="flex-grow container mx-auto p-4 dashboard-content">
                 <div className="welcome-header mb-6 p-6 bg-white rounded-lg shadow-md relative overflow-hidden">
-                    <h2 className="text-3xl font-semibold">Welcome, {teacherData ? teacherData.name : 'Guest'}!</h2>
+                    <div className="flex items-center relative z-10">
+                        <h2 className="text-3xl font-semibold">Welcome, {teacherData ? teacherData.name : 'Guest'}!</h2>
+                    </div>
+                    <div className="shape circle1"></div>
+                    <div className="shape circle2"></div>
+                    <div className="shape square1"></div>
+                    <div className="shape triangle1"></div>
+                    <div className="shape rectangle1"></div>
                 </div>
 
                 {teacherData && (
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
                         <div className="column left-column md:col-span-3">
-                            <QuickAttendance />
-                            <AssignmentIssue />
+                            <QuickAttendance/>
+                            <AssignmentIssue/>
                         </div>
                         <div className="column middle-column md:col-span-6">
-                            <TeacherFeedback feedback={teacherData.sub_feedback} />
-                            <TeacherTimetable timetableImage={teacherData.timetableImage} />
+                            <TeacherFeedback feedback={teacherData.sub_feedback}/>
+                            <TeacherTimetable timetableImage={teacherData.timetableImage}/>
                         </div>
                         <div className="column right-column md:col-span-3">
-                            <TeacherProfile teacherData={teacherData} />
+                            <TeacherProfile teacherData={teacherData}/>
                         </div>
                     </div>
                 )}
@@ -96,20 +103,20 @@ const TeacherDashboard = () => {
     );
 };
 
-const TeacherProfile = ({ teacherData }) => {
+const TeacherProfile = ({teacherData}) => {
     if (!teacherData) {
         return <p>Loading profile...</p>;
     }
 
     return (
-        <div className="teacher-profile bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-2xl font-bold mb-4">{teacherData.name}</h2>
-            <ProfileItem icon={Briefcase} label="Department" value={teacherData.department} />
-            <ProfileItem icon={Award} label="Experience" value={`${teacherData.experience} years`} />
-            <ProfileItem icon={Book} label="Expertise" value={teacherData.expertise} />
+        <div className="teacher-profile bg-white p-10 rounded-lg shadow-md">
+            <h2 className="text-2xl font-bold mb-5">{teacherData.name}</h2>
+            <ProfileItem icon={Briefcase} label="Department" value={teacherData.department}/>
+            <ProfileItem icon={Award} label="Experience" value={`${teacherData.experience} years`}/>
+            <ProfileItem icon={Book} label="Expertise" value={teacherData.expertise}/>
             <ProfileItem icon={Award} label="Qualification" value={teacherData.qualification} />
             <ProfileItem icon={Briefcase} label="Designation" value={teacherData.designation} />
-            <ProfileItem icon={Gift} label="Area of Interest" value={teacherData.area_of_interest} />
+            <ProfileItem icon={Star} label="Area of Interest" value={teacherData.area_of_interest} />
             <ProfileItem icon={MapPin} label="Address" value={teacherData.address} />
             <ProfileItem
                 icon={Calendar}
@@ -262,7 +269,7 @@ const AssignmentIssue = () => {
 };
 
 const ProfileItem = ({ icon: Icon, label, value }) => (
-    <div className="profile-item flex items-center mb-4">
+    <div className="profile-item flex mb-4">
         <Icon className="profile-icon mr-2" />
         <span className="profile-label font-bold mr-2">{label}:</span>
         <span>{value}</span>
