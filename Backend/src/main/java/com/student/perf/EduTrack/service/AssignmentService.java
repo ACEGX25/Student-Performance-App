@@ -2,8 +2,8 @@ package com.student.perf.EduTrack.service;
 
 import com.mongodb.client.gridfs.GridFSBucket;
 import com.mongodb.client.gridfs.GridFSBuckets;
-import com.mongodb.client.gridfs.model.GridFSDownloadOptions;
 import com.mongodb.client.gridfs.model.GridFSUploadOptions;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.MongoDatabaseFactory;
@@ -23,7 +23,8 @@ public class AssignmentService {
         this.gridFSBucket = GridFSBuckets.create(mongoDatabaseFactory.getMongoDatabase());
     }
 
-    public String uploadAssignment(MultipartFile file) {
+    // Upload assignment with additional metadata (subject, description, dueDate)
+    public String uploadAssignment(MultipartFile file, String subject, String description, String dueDate) {
         try {
             // Validate file size (10 MB limit)
             if (file.getSize() > 10 * 1024 * 1024) {
@@ -35,13 +36,15 @@ public class AssignmentService {
                 throw new IOException("Only PDF files are allowed");
             }
 
-            // Proceed with uploading the file to GridFS
+            // Proceed with uploading the file to GridFS with metadata
             try (InputStream inputStream = file.getInputStream()) {
                 GridFSUploadOptions options = new GridFSUploadOptions()
-                        .metadata(new org.bson.Document("contentType", file.getContentType())
-                                .append("studentId", "12345")  // Example metadata
-                                .append("assignmentId", "math101"));
+                        .metadata(new Document("contentType", file.getContentType())
+                                .append("subject", subject)
+                                .append("description", description)
+                                .append("dueDate", dueDate));
 
+                // Upload file and return the file ID
                 ObjectId fileId = gridFSBucket.uploadFromStream(file.getOriginalFilename(), inputStream, options);
                 return fileId.toHexString();
             }
@@ -50,6 +53,7 @@ public class AssignmentService {
             throw new RuntimeException("Error uploading file: " + e.getMessage(), e);
         }
     }
+
     // Method to retrieve the file from GridFS
     public InputStream getFile(String fileId) throws IOException {
         ObjectId objectId = new ObjectId(fileId);
@@ -61,4 +65,3 @@ public class AssignmentService {
         gridFSBucket.delete(new ObjectId(fileId));
     }
 }
-

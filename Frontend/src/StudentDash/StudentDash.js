@@ -3,6 +3,7 @@ import { Bell, Book, Calendar, ChevronRight, User, BarChart, Activity, Hash, AtS
 import './StudentDash.css'
 import { Link } from 'react-router-dom';
 import pic1 from'../../src/assets/nigga.jpeg'
+import { useHistory } from 'react-router-dom';
 
 const StudentDash = () => {
   const [notifications, setNotifications] = useState([]);
@@ -54,6 +55,16 @@ const StudentDash = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  const handleLogout = () => {
+    // Clear auth token and username from localStorage
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('username');
+    localStorage.removeItem('role');
+
+    // Redirect to the login page
+    window.location.href = '/authpage';
+  };
+
   const CircularProgressBar = ({ percentage, label, color }) => (
     <div className="circular-progress">
       <svg viewBox="0 0 36 36" className="circular-chart">
@@ -99,7 +110,8 @@ const StudentDash = () => {
         <a href="#" className="block md:inline-block py-2 hover:text-blue-200">Dashboard</a>
             <a href="#" className="block md:inline-block py-2 hover:text-blue-200">Exams</a>
             <a href="#" className="block md:inline-block py-2 hover:text-blue-200">Assignments</a>
-            <a href="#" className="block md:inline-block py-2 hover:text-blue-200">Results</a>
+            <a href="/student/viewresult" className="block md:inline-block py-2 hover:text-blue-200">Results</a>
+            <a href="#" className="block md:inline-block py-2 hover:text-blue-200" onClick={handleLogout}>Logout</a>
           </nav>
           <button className="md:hidden" onClick={toggleMenu}>
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

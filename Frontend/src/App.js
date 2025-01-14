@@ -19,13 +19,14 @@ function AnimatedRoutes() {
     <Routes location={location} key={location.pathname}>
       <Route path="/" element={<HomePage />} />
       <Route path="/authpage" element={<AuthPage />} />
-        <Route path="/admin-dashboard" element={<Admin />}/>
+        <Route path="/admin-dashboard" element={<Admin />}/>  
         <Route path="/admin-dashboard/Assist/Timetable" element={< Time/>} />
       <Route path="/fill-details" element={< Inter/>} />
       <Route path="/student/dashboard/:username" element={<StudentDash />} />
       <Route path="/student/profile/:username" element={<UserProfile />} />
-      <Route path="/teacher/dashboard/:username" element={<TeacherDash />}/>
+      <Route path="/staff/dashboard/:username" element={<TeacherDash />}/>
       <Route path="/student/viewresult" element={<ResultPortal />}/>
+      <Route path="/admin/time-table" element={<Time />}/>
     </Routes>
   );
 }

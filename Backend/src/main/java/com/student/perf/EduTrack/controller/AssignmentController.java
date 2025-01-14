@@ -22,20 +22,25 @@ public class AssignmentController {
         this.assignmentService = assignmentService;
     }
 
-    // Existing upload endpoint
+    // Modified upload endpoint to handle additional fields (subject, description, dueDate)
     @PostMapping("/upload")
     @PreAuthorize("hasRole('staff')")
-    public ResponseEntity<String> uploadAssignment(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<String> uploadAssignment(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("subject") String subject,
+            @RequestParam("description") String description,
+            @RequestParam("dueDate") String dueDate) {
         try {
-            String fileId = assignmentService.uploadAssignment(file);
-            return ResponseEntity.ok("File uploaded successfully with ID: " + fileId);
+            // Pass the additional fields along with the file to the service
+            String fileId = assignmentService.uploadAssignment(file, subject, description, dueDate);
+            return ResponseEntity.ok("Assignment uploaded successfully with ID: " + fileId);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error uploading file: " + e.getMessage());
+                    .body("Error uploading assignment: " + e.getMessage());
         }
     }
 
-    // New endpoint to retrieve the file
+    // Endpoint to retrieve the file
     @GetMapping("/download/{fileId}")
     @PreAuthorize("hasRole('staff')")
     public ResponseEntity<InputStreamResource> downloadAssignment(@PathVariable("fileId") String fileId) {

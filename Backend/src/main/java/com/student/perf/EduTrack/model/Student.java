@@ -17,8 +17,8 @@ import java.util.Date;
 public class Student extends User{
 
     private int rollno;                            // Student Roll Number
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
     private Date date_of_birth;                    // Date of birth
     private String department;                     // Department (e.g., CS)
     private int hours_studied;                      // Total hours studied

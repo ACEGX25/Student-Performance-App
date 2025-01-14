@@ -62,7 +62,7 @@ const AuthPage = () => {
 
             // Redirect based on role
             if (data.role === 'Student') navigate(`/student/dashboard/${username}`);
-            else if (data.role === 'staff') navigate(`/teacher/dashboard`);
+            else if (data.role === 'staff') navigate(`/staff/dashboard/${username}`);
             else if (data.role === 'admin') navigate('/admin-dashboard');
             else
             {

@@ -110,7 +110,7 @@ const Admin = () => {
                             {openDropdown === 'create' && (
                                 <ul className="edutrack-admin__dropdown">
                                     <li className="edutrack-admin__dropdown-item">Exam & Schedule</li>
-                                    <li className="edutrack-admin__dropdown-item"><Link to="Assist/Timetable">Timetable</Link></li>
+                                    <li className="edutrack-admin__dropdown-item"><Link to="/admin/time-table">Timetable</Link></li>
                                 </ul>
                             )}
                         </li>

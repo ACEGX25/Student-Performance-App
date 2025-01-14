@@ -85,6 +85,11 @@ export default function ResultForm() {
           </div>
         )}
       </div>
+      <footer className="app-footer text-white p-4 mt-8">
+                <div className="container mx-auto text-center">
+                    <p>&copy; 2025 EduTrack. All rights reserved.</p>
+                </div>
+            </footer>
     </>
   );
 }

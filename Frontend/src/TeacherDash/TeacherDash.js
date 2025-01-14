@@ -1,14 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-    Briefcase,
-    Award,
-    Book,
-    Star,
-    MapPin,
-    Calendar,
-    BarChart,
-    Users
-} from 'lucide-react';
+import { Briefcase, Award, Book, Star, MapPin, Calendar, BarChart, Users} from 'lucide-react';
 import './TeacherDash.css';
 
 
@@ -16,6 +7,7 @@ const TeacherDashboard = () => {
     const [teacherData, setTeacherData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -55,6 +47,20 @@ const TeacherDashboard = () => {
         fetchData();
     }, []);
 
+    const toggleMenu = () => {
+        setIsMenuOpen(!isMenuOpen);
+      };
+    
+      const handleLogout = () => {
+        // Clear auth token and username from localStorage
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('username');
+        localStorage.removeItem('role');
+    
+        // Redirect to the login page
+        window.location.href = '/authpage';
+      };
+
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error}</p>;
 
@@ -63,7 +69,12 @@ const TeacherDashboard = () => {
             <header className="app-header text-white p-4">
                 <div className="container mx-auto flex justify-between items-center">
                     <h1 className="text-2xl font-bold">EduTrack</h1>
-                </div>
+               
+                <nav className={`md:flex space-x-4 ${isMenuOpen ? 'block' : 'hidden'}`}>
+                <a href="#" className="block md:inline-block py-2 hover:text-blue-200">Dashboard</a>
+            <a href="#" className="block md:inline-block py-2 hover:text-blue-200" onClick={handleLogout}>Logout</a>
+          </nav>
+          </div>
             </header>
 
             <main className="flex-grow container mx-auto p-4 dashboard-content">
@@ -80,16 +91,17 @@ const TeacherDashboard = () => {
 
                 {teacherData && (
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-                        <div className="column left-column md:col-span-3">
-                            <QuickAttendance/>
-                            <AssignmentIssue/>
+                         <div className="column right-column md:col-span-3">
+                            <TeacherProfile teacherData={teacherData}/>
                         </div>
                         <div className="column middle-column md:col-span-6">
                             <TeacherFeedback feedback={teacherData.sub_feedback}/>
                             <TeacherTimetable timetableImage={teacherData.timetableImage}/>
                         </div>
-                        <div className="column right-column md:col-span-3">
-                            <TeacherProfile teacherData={teacherData}/>
+                       
+                        <div className="column left-column md:col-span-3">
+                            <QuickAttendance/>
+                            <AssignmentIssue/>
                         </div>
                     </div>
                 )}
@@ -104,33 +116,32 @@ const TeacherDashboard = () => {
     );
 };
 
-const TeacherProfile = ({teacherData}) => {
+const TeacherProfile = ({ teacherData }) => {
     if (!teacherData) {
         return <p>Loading profile...</p>;
     }
 
     return (
-        <div className="teacher-profile bg-white p-10 rounded-lg shadow-md">
-            <h2 className="text-2xl font-bold mb-5">{teacherData.name}</h2>
-            <ProfileItem icon={Briefcase} label="Department" value={teacherData.department}/>
-            <ProfileItem icon={Award} label="Experience" value={`${teacherData.experience} years`}/>
-            <ProfileItem icon={Book} label="Expertise" value={teacherData.expertise}/>
-            <ProfileItem icon={Award} label="Qualification" value={teacherData.qualification} />
-            <ProfileItem icon={Briefcase} label="Designation" value={teacherData.designation} />
-            <ProfileItem icon={Star} label="Area of Interest" value={teacherData.area_of_interest} />
-            <ProfileItem icon={MapPin} label="Address" value={teacherData.address} />
-            <ProfileItem
-                icon={Calendar}
-                label="Date of Birth"
-                value={
-                    teacherData.date_of_birth && teacherData.date_of_birth.$date
-                        ? teacherData.date_of_birth.$date.split('/').join(' / ')
-                        : 'N/A'
-                }
-            />
+        <div className="teacher-profile bg-white p-6 rounded-lg shadow-md">
+            <h2 className="text-2xl font-bold mb-4">Staff Details</h2>
+            <div className="profile-items">
+                <ProfileItem icon={Briefcase} label="Department" value={teacherData.department} />
+                <ProfileItem icon={Award} label="Experience" value={`${teacherData.experience} years`} />
+                <ProfileItem icon={Book} label="Expertise" value={teacherData.expertise} />
+                <ProfileItem icon={Award} label="Qualification" value={teacherData.qualification} />
+                <ProfileItem icon={Briefcase} label="Designation" value={teacherData.designation} />
+                <ProfileItem icon={Star} label="Area of Interest" value={teacherData.area_of_interest} />
+                <ProfileItem icon={MapPin} label="Address" value={teacherData.address} />
+                <ProfileItem
+                    icon={Calendar}
+                    label="Date of Birth"
+                    value={teacherData.date_of_birth ? teacherData.date_of_birth.split('-').join(' / ') : 'N/A'}
+                />
+            </div>
         </div>
     );
 };
+
 
 const TeacherFeedback = ({ feedback }) => {
     return (
@@ -193,7 +204,7 @@ const QuickAttendance = () => {
                         type="text"
                         value={absentees}
                         onChange={(e) => setAbsentees(e.target.value)}
-                        placeholder="Enter absent roll numbers (comma-separated)"
+                        placeholder="Enter roll numbers"
                         className="flex-grow mr-2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         aria-label="Absent roll numbers"
                     />
@@ -221,16 +232,54 @@ const QuickAttendance = () => {
 
 const AssignmentIssue = () => {
     const [selectedFile, setSelectedFile] = useState(null);
+    const [subject, setSubject] = useState('');
+    const [description, setDescription] = useState('');
+    const [dueDate, setDueDate] = useState('');
 
     const handleFileUpload = (e) => {
         setSelectedFile(e.target.files[0]);
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (selectedFile) {
-            console.log('File uploaded:', selectedFile);
-            // Handle file upload logic here
+
+        if (!selectedFile || !subject || !description || !dueDate) {
+            alert("Please fill in all fields and select a file.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        formData.append('subject', subject);
+        formData.append('description', description);
+        formData.append('dueDate', dueDate);
+
+        try {
+            const token = localStorage.getItem('authToken');
+            const response = await fetch('http://localhost:8080/assignments/upload', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: formData,
+            });
+
+            // Log raw response text
+           const responseText = await response.text();
+           console.log('Raw response:', responseText); // Log the response body
+
+            if (!response.ok) {
+                throw new Error('Error uploading assignment');
+            }
+
+            alert(responseText);
+            setSelectedFile(null); // Reset the file input
+            setSubject('');
+            setDescription('');
+            setDueDate('');
+        } catch (err) {
+            console.error('Upload error:', err);
+            alert('Error uploading assignment');
         }
     };
 
@@ -243,23 +292,47 @@ const AssignmentIssue = () => {
             <form className="space-y-4" onSubmit={handleSubmit}>
                 <div>
                     <label htmlFor="subject" className="block text-sm font-medium text-gray-700">Subject</label>
-                    <select id="subject" className="assignment-select">
-                        <option>Mathematics</option>
-                        <option>Physics</option>
-                        <option>Chemistry</option>
+                    <select 
+                        id="subject" 
+                        className="assignment-select" 
+                        value={subject} 
+                        onChange={(e) => setSubject(e.target.value)}
+                    >
+                        <option value="">Select Subject</option>
+                        <option value="Mathematics">Mathematics</option>
+                        <option value="Physics">Physics</option>
+                        <option value="Chemistry">Chemistry</option>
                     </select>
                 </div>
                 <div>
                     <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
-                    <textarea id="description" rows={3} className="assignment-textarea"></textarea>
+                    <textarea 
+                        id="description" 
+                        rows={3} 
+                        className="assignment-textarea"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                    />
                 </div>
                 <div>
                     <label htmlFor="due-date" className="block text-sm font-medium text-gray-700">Due Date</label>
-                    <input type="date" id="due-date" className="assignment-input" />
+                    <input 
+                        type="date" 
+                        id="due-date" 
+                        className="assignment-input"
+                        value={dueDate}
+                        onChange={(e) => setDueDate(e.target.value)}
+                    />
                 </div>
                 <div>
                     <label htmlFor="file-upload" className="block text-sm font-medium text-gray-700">Upload PDF</label>
-                    <input type="file" id="file-upload" accept="application/pdf" onChange={handleFileUpload} className="assignment-file-upload" />
+                    <input 
+                        type="file" 
+                        id="file-upload" 
+                        accept="application/pdf" 
+                        onChange={handleFileUpload} 
+                        className="assignment-file-upload"
+                    />
                 </div>
                 <button type="submit" className="assignment-submit-btn">
                     Issue Assignment
@@ -270,11 +343,14 @@ const AssignmentIssue = () => {
 };
 
 const ProfileItem = ({ icon: Icon, label, value }) => (
-    <div className="profile-item flex mb-4">
-        <Icon className="profile-icon mr-2" />
-        <span className="profile-label font-bold mr-2">{label}:</span>
-        <span>{value}</span>
+    <div className="profile-item flex items-start mb-3">
+        <Icon className="profile-icon w-6 h-6 text-gray-500 mr-4" />
+        <div>
+            <span className="profile-label text-gray-700 font-semibold">{label}:</span>
+            <span className="ml-2 text-gray-600">{value}</span>
+        </div>
     </div>
 );
+
 
 export default TeacherDashboard;

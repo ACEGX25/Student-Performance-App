@@ -25,8 +25,8 @@ public class Staff extends User {
     private String designation;
     private String area_of_interest;
     private String address;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
     private Date date_of_birth;
     private int sub_feedback;
 
