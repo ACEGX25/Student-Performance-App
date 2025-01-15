@@ -172,7 +172,7 @@ const TeacherTimetable = ({ timetableImage }) => {
             </h2>
             <div className="flex justify-center">
                 {timetableImage ? (
-                    <img src={timetableImage} alt="Timetable" className="rounded-lg" />
+                    <img src={`http:/timetable/view/${timetableImage}`} alt="Timetable"/>
                 ) : (
                     <p>Timetable image not available</p>
                 )}
