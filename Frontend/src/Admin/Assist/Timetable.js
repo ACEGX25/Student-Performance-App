@@ -32,30 +32,29 @@ export default function TimetableUpload() {
 
         setUploading(true);
         setUploadError(null);
-        try {
+        
             // Prepare the data for uploading
             const formData = new FormData();
-            formData.append('timetable', selectedFile);
+            formData.append('file', selectedFile);
             formData.append('semester', semester);
             formData.append('department', department);
-
+            try {
             const token = localStorage.getItem('authToken');
             const username = localStorage.getItem('username');
 
             // Send the POST request
             const response = await fetch('http://localhost:8080/timetables/upload', {
                 method: 'POST',
-                body: formData,
+                
                 headers: {
                     'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
                 },
-                credentials: 'include',
+                body: formData,
             });
 
             if (response.ok) {
-                const result = await response.json();
-                console.log('File uploaded successfully:', result);
+                const result = await response.text();
+                console.log('Raw Response:', result);
 
                 // Simulate upload progress
                 let uploadInterval = setInterval(() => {

@@ -29,11 +29,10 @@ public class TimetableController {
     public ResponseEntity<String> uploadTimetable(
             @RequestParam("file") MultipartFile file,
             @RequestParam("semester") String semester,
-            @RequestParam("department") String department,
-            @RequestParam("uploadedBy") String uploadedBy) {
+            @RequestParam("department") String department) {
         try {
             // Call the service method to upload the timetable
-            String fileId = timetableService.uploadTimetableImage(file, semester, department, uploadedBy);
+            String fileId = timetableService.uploadTimetableImage(file, semester, department);
             return ResponseEntity.ok("Timetable uploaded successfully with ID: " + fileId);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -56,7 +55,6 @@ public class TimetableController {
                 return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
                         .body("Unsupported image format");
             }
-            System.out.println("file uploaded successfully with id"+fileId);
             // Return the image with appropriate headers
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_TYPE, contentType)

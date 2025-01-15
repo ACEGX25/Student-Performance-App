@@ -32,7 +32,7 @@ public class TimetableService {
     }
 
     // Upload timetable image with metadata (semester, department, uploadedBy)
-    public String uploadTimetableImage(MultipartFile file, String semester, String department, String uploadedBy) {
+    public String uploadTimetableImage(MultipartFile file, String semester, String department) {
         try {
             // Validate file size (5 MB limit)
             if (file.getSize() > 5 * 1024 * 1024) {
@@ -50,8 +50,7 @@ public class TimetableService {
                 GridFSUploadOptions options = new GridFSUploadOptions()
                         .metadata(new Document("contentType", contentType)
                                 .append("semester", semester)
-                                .append("department", department)
-                                .append("uploadedBy", uploadedBy));
+                                .append("department", department));
 
                 // Upload file and return the file ID
                 ObjectId fileId = gridFSBucket.uploadFromStream(file.getOriginalFilename(), inputStream, options);
