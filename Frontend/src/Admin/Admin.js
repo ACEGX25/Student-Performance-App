@@ -119,7 +119,7 @@ const Admin = () => {
                                 className="edutrack-admin__nav-button"
 
                             >
-                                <i className="edutrack-admin__icon">🔍</i> Search
+                                <i className="edutrack-admin__icon">🔍</i> <Link to="/admin/Search">Search</Link>
 
                             </button>
 

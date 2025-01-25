@@ -23,6 +23,41 @@ const AuthPage = () => {
     return regex.test(password);
   };
 
+  const handleAdminLogin = async (username, password) => {
+    try {
+      const url = 'http://localhost:8080/api/auth/login';
+      const payload = { username, password };
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Admin Login Response:', data);
+
+        // Verify if the role is "admin"
+        if (data.role === 'Admin') {
+          localStorage.setItem('authToken', data.token);
+          localStorage.setItem('role', data.role);
+          localStorage.setItem('username', data.username);
+
+          navigate('/admin-dashboard');
+          window.location.reload();
+        } else {
+          setMessage('You are not authorized as an admin.');
+        }
+      } else {
+        const result = await response.json();
+        setMessage(result.message || 'Admin login failed');
+      }
+    } catch (error) {
+      setMessage('Error: ' + error.message);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = {};
@@ -43,8 +78,8 @@ const AuthPage = () => {
       try {
         const url = isLogin ? 'http://localhost:8080/api/auth/login' : 'http://localhost:8080/api/auth/signup';
         const payload = isLogin
-          ? { username, password }
-          : { username, email, password, role, name };
+            ? { username, password }
+            : { username, email, password, role, name };
 
         const response = await fetch(url, {
           method: 'POST',
@@ -54,22 +89,24 @@ const AuthPage = () => {
 
         if (response.ok) {
           const data = await response.json();
+          console.log('Login Response:', data); // Debugging response from the backend
 
           if (isLogin) {
-            localStorage.setItem('authToken', data.token);
-            localStorage.setItem('role', data.role);
-            localStorage.setItem('username', data.username);
+            if (data.role === 'admin') {
+              // Use the admin-specific login handler
+              await handleAdminLogin(username, password);
+            } else {
+              localStorage.setItem('authToken', data.token);
+              localStorage.setItem('role', data.role);
+              localStorage.setItem('username', data.username);
 
-            // Redirect based on role
-            if (data.role === 'Student') navigate(`/student/dashboard/${username}`);
-            else if (data.role === 'staff') navigate(`/staff/dashboard/${username}`);
-            else if (data.role === 'admin') navigate('/admin-dashboard');
-            else
-            {
-              navigate('/fill-details');
+              // Redirect based on role
+              if (data.role === 'Student') navigate(`/student/dashboard/${data.username}`);
+              else if (data.role === 'staff') navigate(`/staff/dashboard/${data.username}`);
+              else navigate('/fill-details');
+
+              window.location.reload();
             }
-
-            window.location.reload();
           } else {
             setMessage('Account Created Successfully! Redirecting you to the login, Please Wait!');
             setTimeout(() => {

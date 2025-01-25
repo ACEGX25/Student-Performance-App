@@ -10,6 +10,7 @@ import Inter from './Interpage/Inter'
 import Admin from './Admin/Admin'
 import ResultPortal from './ResultPortal/ResultPortal';
 import Time from './Admin/Assist/Timetable'
+import Search from './Admin/Assist/Search.js'
 
 // Component for Handling Routes
 function AnimatedRoutes() {
@@ -27,6 +28,7 @@ function AnimatedRoutes() {
       <Route path="/staff/dashboard/:username" element={<TeacherDash />}/>
       <Route path="/student/viewresult" element={<ResultPortal />}/>
       <Route path="/admin/time-table" element={<Time />}/>
+        <Route path="/admin/Search" element={<Search />}/>
     </Routes>
   );
 }
