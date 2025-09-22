@@ -14,10 +14,10 @@ public interface StaffRepository extends MongoRepository<Staff, String> {
     Optional<Staff> findByUsername(String username);
 
     // Text search for staff using MongoDB's full-text search capabilities
-    @Query("{ '$text': { '$search': ?0 } }")
-    List<Map<String, Object>> searchByQuery(String query);
+//    @Query("{ '$text': { '$search': ?0 } }")
+//    List<Map<String, Object>> searchByQuery(String query);
 
     // Search staff by name, ID, or department
-    @Query("{ '$or': [ {'name': ?0}, {'rollno': ?0}, {'department': ?0} ] }")
-    List<Map<String, Object>> findByNameOrIdOrDepartment(String keyword);
+    @Query("{ '$or': [ {'name': ?0}, {'department': ?0} ] }")
+    List<Map<String, Object>> findByNameOrIdOrDepartment(String query);
 }

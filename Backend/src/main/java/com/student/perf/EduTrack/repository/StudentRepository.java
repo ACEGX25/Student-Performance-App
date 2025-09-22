@@ -12,11 +12,11 @@ public interface StudentRepository extends MongoRepository<Student, String> {
 
     Optional<Student> findByUsername(String username);
 
-    // Text search for students using MongoDB's full-text search capabilities
-    @Query("{ '$text': { '$search': ?0 } }")
-    List<Map<String, Object>> searchByQuery(String query);
+//    // Text search for students using MongoDB's full-text search capabilities
+//    @Query("{ '$text': { '$search': ?0 } }")
+//    List<Map<String, Object>> searchByQuery(String query);
 
     // Search students by name, roll number, or department
     @Query("{ '$or': [ {'name': ?0}, {'rollno': ?0}, {'department': ?0} ] }")
-    List<Map<String, Object>> findByNameOrRollNoOrDepartment(String keyword);
+    List<Map<String, Object>> findByNameOrRollNoOrDepartment(String query);
 }

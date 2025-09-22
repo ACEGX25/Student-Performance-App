@@ -8,11 +8,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 @RestController
 @RequestMapping("/search")
 public class SearchController {
 
+    private final Logger logger = LoggerFactory.getLogger(SearchController.class);
     private final SearchService searchService;
 
     public SearchController(SearchService searchService) {
@@ -24,6 +26,7 @@ public class SearchController {
     @PreAuthorize("hasRole('admin')")
     public ResponseEntity<?> searchForAdmin(
             @RequestParam(value = "query", required = false) String query) {
+        logger.info("Received query parameter: {}", query);
         if (query == null || query.trim().isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Search query cannot be null or empty.");
@@ -33,6 +36,7 @@ public class SearchController {
             List<Map<String, Object>> results = searchService.search(query);
             return ResponseEntity.ok(results);
         } catch (Exception e) {
+            logger.error("Error during search: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error searching records: " + e.getMessage());
         }

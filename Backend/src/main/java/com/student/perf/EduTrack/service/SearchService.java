@@ -23,8 +23,8 @@ public class SearchService {
 
     // Search method for students and staff
     public List<Map<String, Object>> search(String query) {
-        List<Map<String, Object>> studentResults = studentRepository.searchByQuery(query);
-        List<Map<String, Object>> staffResults = staffRepository.searchByQuery(query);
+        List<Map<String, Object>> studentResults = studentRepository.findByNameOrRollNoOrDepartment(query);
+        List<Map<String, Object>> staffResults = staffRepository.findByNameOrIdOrDepartment(query);
 
         // Combine student and staff results
         List<Map<String, Object>> combinedResults = new ArrayList<>();

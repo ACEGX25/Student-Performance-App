@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { Search, User, Users } from "lucide-react"
-import "./Assist.css"
+// import "./Assist.css"
 import {Link} from "react-router-dom";
 
 const AdminSearchPage = () => {
