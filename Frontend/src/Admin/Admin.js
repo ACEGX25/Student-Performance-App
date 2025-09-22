@@ -1,9 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Admin.css';
-import {Link} from 'react-router-dom'
+import {Link, useNavigate} from 'react-router-dom'
 
 const Admin = () => {
     const [openDropdown, setOpenDropdown] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+    try {
+      setLoading(true);
+
+      const token = localStorage.getItem('authToken');
+      const username = localStorage.getItem('username');
+      const role = localStorage.getItem('role');
+
+      if (!token || !username || role !== "Admin") {
+        throw new Error('Not authenticated. Please log in again.');
+        }
+
+      setLoading(false);
+    } catch (err) {
+      console.error(err.message);
+      //navigate('/login'); // redirect to login page
+    }
+  }, [navigate]);
 
     const quickOverlookData = [
         {
@@ -84,6 +105,10 @@ const Admin = () => {
     const toggleDropdown = (dropdown) => {
         setOpenDropdown(openDropdown === dropdown ? null : dropdown);
     };
+
+    if (loading) {
+    return <div className="edutrack-admin__loading">Loading...</div>;
+    }
 
     return (
         <div className="edutrack-admin">
