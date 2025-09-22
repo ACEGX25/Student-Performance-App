@@ -1,252 +1,316 @@
-import React, { useState, useEffect } from 'react';
-import { User, Book, Clock, Users, DollarSign, Star, Activity, Brain, Home, UserCheck, Mail, Calendar, Image, ChevronRight, Camera, Pencil } from 'lucide-react';
-import './UserProfile.css';
+import React, { useState, useEffect } from "react";
+import { Pencil } from "lucide-react";
+import Cropper from "react-easy-crop";
+import "./UserProfile.css";
 
 function UserProfile() {
   const [userData, setUserData] = useState(null);
-  const [editingField, setEditingField] = useState(null);
+  const [editing, setEditing] = useState(false);
   const [editedData, setEditedData] = useState(null);
   const [profilePicture, setProfilePicture] = useState(null);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // cropper states
+  const [showCropper, setShowCropper] = useState(false);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const token = localStorage.getItem('authToken');
-        const username = localStorage.getItem('username');
+        const token = localStorage.getItem("authToken");
+        const username = localStorage.getItem("username");
+        if (!username) throw new Error("Username not available. Please log in again.");
 
-        if (!username) {
-          throw new Error('Username not available. Please log in again.');
-        }
-
-        const response = await fetch(`http://localhost:8080/api/student/dashboard/${username}`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include',
+        const res = await fetch(`http://localhost:8080/api/student/dashboard/${username}`, {
+          method: "GET",
+          headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+          credentials: "include",
         });
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch user data');
-        }
+        if (!res.ok) throw new Error("Failed to fetch user data");
+        const data = await res.json();
 
-        const data = await response.json();
         setUserData(data);
         setEditedData(data);
-        setProfilePicture(data.profilePicture || '/placeholder.svg?height=150&width=150');
-      } catch (error) {
-        console.error('Error fetching user data:', error);
+
+        // backend now returns base64 photo if available
+        if (data.photo) {
+          setProfilePicture(`data:image/jpeg;base64,${data.photo}`);
+        } else {
+          setProfilePicture(null);
+        }
+      } catch (err) {
+        console.error("Error fetching user data:", err);
       }
     };
 
     fetchUserData();
   }, []);
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
+  // lock body scroll while cropper open
+  useEffect(() => {
+    document.body.style.overflow = showCropper ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [showCropper]);
+
+  const handleToggleEdit = () => {
+    setEditing((s) => !s);
+    if (!editing) setEditedData(userData);
   };
 
-  const handleEdit = (fieldName) => {
-    setEditingField(fieldName);
+  const handleChange = (e) => {
+    const { name, value, type } = e.target;
+    const parsed = type === "number" ? (value === "" ? "" : Number(value)) : value;
+    setEditedData((prev) => ({ ...(prev || {}), [name]: parsed }));
+  };
+
+  const handleProfilePictureChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setProfilePicture(file);
+      setShowCropper(true);
+    }
+    e.target.value = "";
+  };
+
+  const onCropComplete = (croppedArea, croppedAreaPixels) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  };
+
+  const createImage = (url) =>
+    new Promise((resolve, reject) => {
+      const image = new Image();
+      image.addEventListener("load", () => resolve(image));
+      image.addEventListener("error", (err) => reject(err));
+      image.setAttribute("crossOrigin", "anonymous");
+      image.src = url;
+    });
+
+  const saveCroppedImage = async () => {
+    try {
+      const source = profilePicture instanceof File ? URL.createObjectURL(profilePicture) : profilePicture;
+      if (!source) {
+        setShowCropper(false);
+        return;
+      }
+
+      if (!croppedAreaPixels || !(profilePicture instanceof File)) {
+        setEditedData((prev) => ({ ...(prev || {}), profilePicture }));
+        setShowCropper(false);
+        return;
+      }
+
+      const image = await createImage(source);
+      const canvas = document.createElement("canvas");
+      const { width, height, x, y } = croppedAreaPixels;
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(image, x, y, width, height, 0, 0, width, height);
+
+      await new Promise((resolve) => {
+        canvas.toBlob(
+          (blob) => {
+            const fileName = profilePicture.name || "profile.jpg";
+            const file = new File([blob], fileName, { type: "image/jpeg" });
+            setProfilePicture(file);
+            setEditedData((prev) => ({ ...(prev || {}), profilePicture: file }));
+            setShowCropper(false);
+            resolve();
+          },
+          "image/jpeg",
+          0.92
+        );
+      });
+    } catch (err) {
+      console.error("Error cropping image:", err);
+      setShowCropper(false);
+    }
   };
 
   const handleSave = async () => {
     try {
-      const token = localStorage.getItem('authToken');
-      const username = localStorage.getItem('username');
+      const token = localStorage.getItem("authToken");
+      const username = localStorage.getItem("username");
+      if (!username) throw new Error("Username not available");
 
       const formData = new FormData();
-      Object.keys(editedData).forEach(key => {
-        formData.append(key, editedData[key]);
-      });
+
+      // Append student JSON as "student"
+      formData.append(
+        "student",
+        new Blob([JSON.stringify(editedData)], { type: "application/json" })
+      );
+
+      // Append photo if user selected one
       if (profilePicture instanceof File) {
-        formData.append('profilePicture', profilePicture);
+        formData.append("photo", profilePicture);
       }
 
       const response = await fetch(`http://localhost:8080/api/student/update/${username}`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
-        credentials: 'include',
-        body: JSON.stringify(editedData),
+        credentials: "include",
+        body: formData,
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to update user data');
-      }
-
+      if (!response.ok) throw new Error("Failed to update user data");
       const updatedData = await response.json();
       setUserData(updatedData);
       setEditedData(updatedData);
-      setEditingField(null);
-    } catch (error) {
-      console.error('Error updating user data:', error);
+      setEditing(false);
+
+      if (updatedData.photo) {
+        setProfilePicture(`data:image/jpeg;base64,${updatedData.photo}`);
+      }
+    } catch (err) {
+      console.error("Error updating user data:", err);
     }
   };
 
   const handleCancel = () => {
     setEditedData(userData);
-    setEditingField(null);
+    setEditing(false);
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setEditedData(prev => prev ? { ...prev, [name]: value } : null);
-  };
-
-  const handleProfilePictureChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setProfilePicture(file);
-      setEditedData(prev => ({ ...prev, profilePicture: file }));
-    }
-  };
-
-  const renderField = (label, name, value, type = 'text', editable = true, placeholder = '') => {
-    const isEditing = editingField === name;
-
-    return (
-      <div className="up-field">
-        <div className="up-field-label">{label}</div>
-        <div className="up-field-value">
-          {isEditing && editable ? (
-            <div className="up-field-edit">
-              <input
-                type={type}
-                name={name}
-                value={editedData[name] || ''}
-                onChange={handleChange}
-                className="up-input"
-              />
-              <button
-                className="up-button up-button-primary"
-                onClick={handleSave}
-              >
-                Save
-              </button>
-              <button
-                className="up-button up-button-secondary"
-                onClick={handleCancel}
-              >
-                Cancel
-              </button>
-            </div>
-          ) : (
-            <>
-              <span className={value ? "up-text" : "up-text up-text-placeholder"}>
-                {value || placeholder}
-              </span>
-              {editable && (
-                <button
-                  className="up-button up-button-icon"
-                  onClick={() => handleEdit(name)}
-                >
-                  <Pencil className="up-icon" />
-                </button>
-              )}
-            </>
-          )}
-        </div>
-      </div>
-    );
-  };
-
-  if (!userData) {
-    return <div className="up-loading">Loading...</div>;
-  }
+  if (!userData) return <div className="up-loading">Loading...</div>;
 
   return (
     <div className="up-page">
       <header className="app-header text-white p-4">
         <div className="container mx-auto flex justify-between items-center">
           <h1 className="text-2xl font-bold">EduTrack</h1>
-          <nav className={`md:flex space-x-4 ${isMenuOpen ? 'block' : 'hidden'}`}>
-            <a href="/student-dashboard" className="block md:inline-block py-2 hover:text-blue-200">Back to StudentDash</a>
-          </nav>
-          <button className="md:hidden" onClick={toggleMenu}>
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
+          <button className="up-button up-button-icon" onClick={handleToggleEdit}>
+            <Pencil className="up-icon" /> {editing ? "Stop Editing" : "Edit Profile"}
           </button>
         </div>
       </header>
 
       <div className="up-container">
         <div className="up-breadcrumb">
-          {/* <a href="/my-account" className="up-breadcrumb-link">
-            My Account
-          </a>
-          <ChevronRight className="up-breadcrumb-icon" /> */}
           <span className="up-breadcrumb-current">Account Home</span>
         </div>
-        
+
         <div className="up-content">
           <div className="up-card">
             <div className="up-card-header">
-              <h2 className="up-card-title">Photo</h2>
-              <p className="up-card-subtitle">150×150px JPEG, PNG Image</p>
+              <div>
+                <h2 className="up-card-title">Photo</h2>
+                <div className="up-card-subtitle">150×150px JPEG, PNG Image</div>
+              </div>
             </div>
+
             <div className="up-card-content up-photo-section">
               <div className="up-photo-container">
-                <img
-                  src={profilePicture instanceof File ? URL.createObjectURL(profilePicture) : profilePicture}
-                  alt="Profile Picture"
-                  className="up-photo"
-                />
+                {profilePicture ? (
+                  <img
+                    src={profilePicture instanceof File ? URL.createObjectURL(profilePicture) : profilePicture}
+                    alt="Profile"
+                    className="up-photo"
+                  />
+                ) : (
+                  <div className="up-photo-placeholder">Profile</div>
+                )}
               </div>
-              <div className="up-photo-actions">
-                <button
-                  className="up-button up-button-outline"
-                  onClick={() => document.getElementById("photo-upload").click()}
-                >
-                  Change Photo
-                </button>
-                <input
-                  id="photo-upload"
-                  type="file"
-                  className="up-hidden"
-                  accept="image/jpeg,image/png"
-                  onChange={handleProfilePictureChange}
-                />
-              </div>
+
+              {editing && (
+                <div className="up-photo-actions">
+                  <label htmlFor="photo-upload" className="up-button up-button-outline">
+                    Change Photo
+                  </label>
+                  <input
+                    id="photo-upload"
+                    type="file"
+                    accept="image/jpeg,image/png"
+                    onChange={handleProfilePictureChange}
+                    style={{ display: "none" }}
+                  />
+                </div>
+              )}
             </div>
           </div>
 
+          {/* Personal Info */}
           <div className="up-card">
             <div className="up-card-header">
               <h2 className="up-card-title">Personal Information</h2>
             </div>
+
             <div className="up-card-content">
-              {renderField("Roll No", "rollno", userData.rollno)}
-              {renderField("Name", "name", userData.name)}
-              {renderField("Email", "email", userData.email, "email")}
-              {renderField("Department", "department", userData.department)}
-              {renderField("Extracurricular Activities", "extracurricular_activities", userData.extracurricular_activities)}
-              {renderField("Sleep Hours", "sleep_hours", userData.sleep_hours, "number")}
-              {renderField("Tutoring Sessions", "tutoring_sessions", userData.tutoring_sessions, "number")}
-              {renderField("Family Income", "family_income", `$${userData.family_income}`, "number")}
-              {renderField("Teacher Review", "teacher_review", userData.teacher_review, "text", false)}
-              {renderField("Physical Activity (hours/week)", "physical_activity", userData.physical_activity, "number")}
-              {renderField("Learning Disabilities", "learning_disabilities", userData.learning_disabilities)}
-              {renderField("Distance from Home (km)", "distance_from_home", userData.distance_from_home, "number")}
-              {renderField("Gender", "gender", userData.gender)}
+              <div className="up-field"><b>Roll No:</b> {editing ? <input className="up-input" name="rollno" type="text" value={editedData.rollno ?? ""} onChange={handleChange} /> : userData.rollno}</div>
+              <div className="up-field"><b>Name:</b> {editing ? <input className="up-input" name="name" type="text" value={editedData.name ?? ""} onChange={handleChange} /> : userData.name}</div>
+              <div className="up-field"><b>Email:</b> {editing ? <input className="up-input" name="email" type="email" value={editedData.email ?? ""} onChange={handleChange} /> : userData.email}</div>
+              <div className="up-field"><b>Department:</b> {editing ? <input className="up-input" name="department" type="text" value={editedData.department ?? ""} onChange={handleChange} /> : userData.department}</div>
+              <div className="up-field"><b>Extracurricular Activities:</b> {editing ? <input className="up-input" name="extracurricular_activities" type="text" value={editedData.extracurricular_activities ?? ""} onChange={handleChange} /> : userData.extracurricular_activities}</div>
+              <div className="up-field"><b>Sleep Hours:</b> {editing ? <input className="up-input" name="sleep_hours" type="number" value={editedData.sleep_hours ?? ""} onChange={handleChange} /> : userData.sleep_hours}</div>
+              <div className="up-field"><b>Tutoring Sessions:</b> {editing ? <input className="up-input" name="tutoring_sessions" type="number" value={editedData.tutoring_sessions ?? ""} onChange={handleChange} /> : userData.tutoring_sessions}</div>
+              <div className="up-field"><b>Family Income:</b> {editing ? <input className="up-input" name="family_income" type="number" value={editedData.family_income ?? ""} onChange={handleChange} /> : `₹${userData.family_income ?? 0}`}</div>
+              <div className="up-field"><b>Teacher Review:</b> {userData.teacher_review}</div>
+              <div className="up-field"><b>Physical Activity:</b> {editing ? <input className="up-input" name="physical_activity" type="number" value={editedData.physical_activity ?? ""} onChange={handleChange} /> : userData.physical_activity}</div>
+              <div className="up-field"><b>Learning Disabilities:</b> {editing ? <input className="up-input" name="learning_disabilities" type="text" value={editedData.learning_disabilities ?? ""} onChange={handleChange} /> : userData.learning_disabilities}</div>
+              <div className="up-field"><b>Distance from Home:</b> {editing ? <input className="up-input" name="distance_from_home" type="number" value={editedData.distance_from_home ?? ""} onChange={handleChange} /> : userData.distance_from_home}</div>
+              <div className="up-field"><b>Gender:</b>
+                {editing ? (
+                  <div>
+                    <label style={{ marginRight: 12 }}><input type="radio" name="gender" value="Male" checked={editedData.gender === "Male"} onChange={handleChange} /> Male</label>
+                    <label><input type="radio" name="gender" value="Female" checked={editedData.gender === "Female"} onChange={handleChange} /> Female</label>
+                  </div>
+                ) : userData.gender}
+              </div>
             </div>
           </div>
         </div>
+
+        {editing && (
+          <div className="up-actions">
+            <button className="up-button up-button-primary" onClick={handleSave}>Save</button>
+            <button className="up-button up-button-secondary" onClick={handleCancel}>Cancel</button>
+          </div>
+        )}
       </div>
 
-      <footer className="bg-gray-800 text-white p-4 mt-8">
-        <div className="container mx-auto text-center">
-          <p>&copy; 2025 EduTrack. All rights reserved.</p>
+      {/* Cropper modal */}
+      {showCropper && (
+        <div className="cropper-modal" onClick={() => setShowCropper(false)}>
+          <div className="cropper-box" onClick={(e) => e.stopPropagation()}>
+            <div className="cropper-wrapper">
+              <Cropper
+                image={profilePicture instanceof File ? URL.createObjectURL(profilePicture) : profilePicture}
+                crop={crop}
+                zoom={zoom}
+                aspect={1}
+                onCropChange={setCrop}
+                onZoomChange={setZoom}
+                onCropComplete={onCropComplete}
+              />
+            </div>
+
+            <div className="cropper-controls">
+              <input
+                type="range"
+                min={1}
+                max={3}
+                step={0.01}
+                value={zoom}
+                onChange={(e) => setZoom(Number(e.target.value))}
+                aria-label="Zoom"
+              />
+
+              <div className="cropper-buttons">
+                <button className="save-btn" onClick={saveCroppedImage}>Save Photo</button>
+                <button className="cancel-btn" onClick={() => setShowCropper(false)}>Cancel</button>
+              </div>
+            </div>
+          </div>
         </div>
-      </footer>
+      )}
     </div>
   );
 }
 
 export default UserProfile;
-

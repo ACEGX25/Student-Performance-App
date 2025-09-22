@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/student")
@@ -103,10 +104,15 @@ public class StudentController {
         }
     }
 
-    // Secure PUT Request for Student details update
-    @PutMapping("/update/{username}")
+
+
+
+    // Secure PUT Request for Student details update (with photo upload)
+    @PutMapping(value = "/update/{username}", consumes = {"multipart/form-data"})
     public ResponseEntity<?> updateStudentDetails(
-            @RequestBody Student updatedDetails,
+            @PathVariable String username,
+            @RequestPart("student") Student updatedDetails,   // JSON part
+            @RequestPart(value = "photo", required = false) MultipartFile photo,  // File part
             @AuthenticationPrincipal UserDetails userDetails) {
 
         try {
@@ -114,7 +120,7 @@ public class StudentController {
             Student student = studentRepository.findByUsername(userDetails.getUsername())
                     .orElseThrow(() -> new RuntimeException("Student not found"));
 
-            // Update only non-null fields
+            // Update only non-null / non-zero fields
             if (updatedDetails.getRollno() != 0) {
                 student.setRollno(updatedDetails.getRollno());
             }
@@ -164,6 +170,11 @@ public class StudentController {
             // Handle password update securely
             if (updatedDetails.getPassword() != null && !updatedDetails.getPassword().isEmpty()) {
                 student.setPassword(passwordEncoder.encode(updatedDetails.getPassword()));
+            }
+
+            // ✅ Handle photo update
+            if (photo != null && !photo.isEmpty()) {
+                student.setPhoto(photo.getBytes());  // assuming 'photo' is a byte[] column in DB
             }
 
             // Save the updated student object

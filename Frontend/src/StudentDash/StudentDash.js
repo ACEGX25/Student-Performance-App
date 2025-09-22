@@ -125,12 +125,14 @@ const StudentDash = () => {
         <div className="welcome-header mb-6 p-6 bg-white rounded-lg shadow-md relative overflow-hidden">
           <div className="flex items-center relative z-10">
             <div className="mr-6">
-              <img 
-                // src={studentData?.profilePicture || '/placeholder.svg?height=100&width=100'} 
-                src={pic1}
-                alt={`${studentData?.name}'s profile`} 
-                className="w-24 h-24 rounded-full object-cover border-4 border-blue-500"
-              />
+              <img
+                  src={studentData?.photo 
+                  ? `data:image/jpeg;base64,${studentData.photo}` 
+                   : '/placeholder.svg?height=100&width=100'}
+                   alt={`${studentData?.name || "User"}'s profile`}
+                    className="w-24 h-24 rounded-full object-cover border-4 border-blue-500"
+                  />
+
             </div>
             <h2 className="text-3xl font-semibold" id='aloha'>Welcome, {studentData?.name || 'Student'}!</h2>
           </div>

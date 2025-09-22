@@ -12,4 +12,5 @@ public class StudentUpdateDTO {
     private String learning_disabilities;           // Presence of learning disabilities (Yes/No)
     private String distance_from_home;               // Distance from home (Near/Far)
     private String gender;                         // Gender (Male/Female/Other)
+    private String profilePicture;
 }

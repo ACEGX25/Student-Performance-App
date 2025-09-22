@@ -35,7 +35,11 @@ public class Student extends User{
     private String gender;                         // Gender (Male/Female/Other)
     private int exam_score;                         // Exam score
 
-    //
+    private byte[] photo;   // Profile photo stored as binary
+
+    public byte[] getPhoto() { return photo; }
+
+    public void setPhoto(byte[] photo) { this.photo = photo; }
 
     public int getHours_studied() {
         return hours_studied;
