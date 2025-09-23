@@ -1,13 +1,14 @@
 package com.student.perf.EduTrack.service;
 
-import com.student.perf.EduTrack.repository.StaffRepository;
+import com.student.perf.EduTrack.model.DTOs.UserSearchResult;
+import com.student.perf.EduTrack.model.Student;
+import com.student.perf.EduTrack.model.Staff;
 import com.student.perf.EduTrack.repository.StudentRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.student.perf.EduTrack.repository.StaffRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class SearchService {
@@ -15,22 +16,26 @@ public class SearchService {
     private final StudentRepository studentRepository;
     private final StaffRepository staffRepository;
 
-    @Autowired
     public SearchService(StudentRepository studentRepository, StaffRepository staffRepository) {
         this.studentRepository = studentRepository;
         this.staffRepository = staffRepository;
     }
 
-    // Search method for students and staff
-    public List<Map<String, Object>> search(String query) {
-        List<Map<String, Object>> studentResults = studentRepository.findByNameOrRollNoOrDepartment(query);
-        List<Map<String, Object>> staffResults = staffRepository.findByNameOrIdOrDepartment(query);
+    public List<UserSearchResult> search(String query) {
+        List<UserSearchResult> results = new ArrayList<>();
 
-        // Combine student and staff results
-        List<Map<String, Object>> combinedResults = new ArrayList<>();
-        combinedResults.addAll(studentResults);
-        combinedResults.addAll(staffResults);
+        // Search students
+        List<Student> students = studentRepository.findByNameOrRollNoOrDepartment(query);
+        for (Student s : students) {
+            results.add(new UserSearchResult(s.getUsername(), s.getName(), "Student"));
+        }
 
-        return combinedResults;
+        // Search staff
+        List<Staff> staffList = staffRepository.findByNameOrIdOrDepartment(query);
+        for (Staff st : staffList) {
+            results.add(new UserSearchResult(st.getUsername(), st.getName(), "Staff"));
+        }
+
+        return results;
     }
 }

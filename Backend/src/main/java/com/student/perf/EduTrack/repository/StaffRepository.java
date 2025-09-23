@@ -18,6 +18,7 @@ public interface StaffRepository extends MongoRepository<Staff, String> {
 //    List<Map<String, Object>> searchByQuery(String query);
 
     // Search staff by name, ID, or department
-    @Query("{ '$or': [ {'name': ?0}, {'department': ?0} ] }")
-    List<Map<String, Object>> findByNameOrIdOrDepartment(String query);
+    @Query("{ '$or': [ {'name': ?0}, {'staffId': ?0}, {'department': ?0} ] }")
+    List<Staff> findByNameOrIdOrDepartment(String query);
+
 }

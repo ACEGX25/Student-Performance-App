@@ -49,7 +49,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             try {
                 // Load user details
+                System.out.println("Username from JWT: " + username);
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                System.out.println("UserDetails: " + userDetails.getUsername());
+                System.out.println("Authorities: " + userDetails.getAuthorities());
 
                 // Validate the token
                 if (jwtUtil.validateToken(token, userDetails.getUsername())) {

@@ -54,10 +54,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         // Attempt to find the user in the Admin repository
         Optional<Admin> adminOpt = adminRepository.findByUsername(username);
+        System.out.println("Admin found? " + adminOpt.isPresent());
         if (adminOpt.isPresent()) {
             Admin admin = adminOpt.get();
             Collection<GrantedAuthority> authorities = new ArrayList<>();
-            authorities.add(new SimpleGrantedAuthority("admin")); // Add the appropriate role
+            authorities.add(new SimpleGrantedAuthority("Admin")); // Add the appropriate role
             return new org.springframework.security.core.userdetails.User(admin.getUsername(), admin.getPassword(), authorities);
         }
 
