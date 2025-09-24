@@ -42,7 +42,7 @@ public class AssignmentController {
 
     // Endpoint to retrieve the file
     @GetMapping("/download/{fileId}")
-    @PreAuthorize("hasRole('staff')")
+    @PreAuthorize("hasAuthority('staff') or hasAuthority('student')")
     public ResponseEntity<InputStreamResource> downloadAssignment(@PathVariable("fileId") String fileId) {
         try {
             InputStream fileStream = assignmentService.getFile(fileId);
@@ -73,4 +73,17 @@ public class AssignmentController {
             return ResponseEntity.status(500).body("Error deleting assignment: " + e.getMessage());
         }
     }
+
+    // Endpoint to fetch all assignments (students, staff, admin can view)
+    @GetMapping("/all")
+    @PreAuthorize("hasAnyAuthority('student','staff')")
+    public ResponseEntity<?> getAllAssignments() {
+        try {
+            return ResponseEntity.ok(assignmentService.getAllAssignments());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error fetching assignments: " + e.getMessage());
+        }
+    }
+
 }

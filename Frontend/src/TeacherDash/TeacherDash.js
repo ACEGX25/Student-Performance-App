@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Briefcase, Award, Book, Star, MapPin, Calendar, BarChart, Users} from 'lucide-react';
+import {Briefcase, Award, Book, Star, MapPin, Calendar, BarChart, Users, ChevronRight} from 'lucide-react';
 import './TeacherDash.css';
+import { Link } from "react-router-dom";
+
 
 
 const TeacherDashboard = () => {
@@ -286,16 +288,16 @@ const AssignmentIssue = () => {
     return (
         <div className="assignment-issue bg-white p-6 rounded-lg shadow-md hover-effect">
             <h2 className="text-xl font-bold mb-4 flex items-center">
-                <Book className="w-5 h-5 mr-2 text-blue-500" />
+                <Book className="w-5 h-5 mr-2 text-blue-500"/>
                 Issue Assignment
             </h2>
             <form className="space-y-4" onSubmit={handleSubmit}>
                 <div>
                     <label htmlFor="subject" className="block text-sm font-medium text-gray-700">Subject</label>
-                    <select 
-                        id="subject" 
-                        className="assignment-select" 
-                        value={subject} 
+                    <select
+                        id="subject"
+                        className="assignment-select"
+                        value={subject}
                         onChange={(e) => setSubject(e.target.value)}
                     >
                         <option value="">Select Subject</option>
@@ -306,9 +308,9 @@ const AssignmentIssue = () => {
                 </div>
                 <div>
                     <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
-                    <textarea 
-                        id="description" 
-                        rows={3} 
+                    <textarea
+                        id="description"
+                        rows={3}
                         className="assignment-textarea"
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
@@ -316,9 +318,9 @@ const AssignmentIssue = () => {
                 </div>
                 <div>
                     <label htmlFor="due-date" className="block text-sm font-medium text-gray-700">Due Date</label>
-                    <input 
-                        type="date" 
-                        id="due-date" 
+                    <input
+                        type="date"
+                        id="due-date"
                         className="assignment-input"
                         value={dueDate}
                         onChange={(e) => setDueDate(e.target.value)}
@@ -326,11 +328,11 @@ const AssignmentIssue = () => {
                 </div>
                 <div>
                     <label htmlFor="file-upload" className="block text-sm font-medium text-gray-700">Upload PDF</label>
-                    <input 
-                        type="file" 
-                        id="file-upload" 
-                        accept="application/pdf" 
-                        onChange={handleFileUpload} 
+                    <input
+                        type="file"
+                        id="file-upload"
+                        accept="application/pdf"
+                        onChange={handleFileUpload}
                         className="assignment-file-upload"
                     />
                 </div>
@@ -338,11 +340,16 @@ const AssignmentIssue = () => {
                     Issue Assignment
                 </button>
             </form>
+            <div style={{marginTop: "20px"}}>
+                <a href="/student/assignments"
+                   className="custom-button text-green-500 hover:underline mt-2 inline-block">View
+                    Assignments <ChevronRight className="inline w-4 h-4"/></a>
+            </div>
         </div>
     );
 };
 
-const ProfileItem = ({ icon: Icon, label, value }) => (
+const ProfileItem = ({icon: Icon, label, value}) => (
     <div className="profile-item flex items-start mb-3">
         <Icon className="profile-icon w-6 h-6 text-gray-500 mr-4" />
         <div>

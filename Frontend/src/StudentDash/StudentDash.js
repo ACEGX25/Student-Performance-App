@@ -159,7 +159,7 @@ const StudentDash = () => {
               <h3 className="text-xl font-semibold">Assignments</h3>
             </div>
             <p className="text-gray-600">You have 3 pending assignments.</p>
-            <a href="#" className="custom-button text-green-500 hover:underline mt-2 inline-block">Submit Assignments <ChevronRight className="inline w-4 h-4" /></a>
+            <a href="/student/assignments" className="custom-button text-green-500 hover:underline mt-2 inline-block">View Assignments <ChevronRight className="inline w-4 h-4" /></a>
           </div>
 
           <div className="feature-card bg-white p-6 rounded-lg shadow-md">

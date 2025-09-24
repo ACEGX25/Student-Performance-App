@@ -2,21 +2,46 @@ import React, { useState } from "react"
 import { Search, User, Users } from "lucide-react"
 // import "./Assist.css"
 import {Link} from "react-router-dom";
+import axios from "axios";
 
 const AdminSearchPage = () => {
     const [searchType, setSearchType] = useState("student")
     const [searchQuery, setSearchQuery] = useState("")
     const [searchResults, setSearchResults] = useState([])
+    const [loading, setLoading] = useState(false);
+    const token = localStorage.getItem("authToken");
 
-    const handleSearch = (e) => {
-        e.preventDefault()
-        // Implement the actual search logic here
-        // For now, we'll just set some dummy results
-        setSearchResults([
-            { id: 1, name: "John Doe", role: "Student", details: "Roll No: 12345" },
-            { id: 2, name: "Jane Smith", role: "Staff", details: "Department: Computer Science" },
-        ])
-    }
+
+    const handleSearch = async (e) => {
+        e.preventDefault();
+        if (!searchQuery.trim()) {
+            setSearchResults([]);
+            alert("Please enter a search term.");
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const res = await axios.get(`http://localhost:8080/search/users`, { params: { query: searchQuery },
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            const filteredResults = res.data.filter(item =>
+                searchType === "student"
+                    ? item.role?.toLowerCase() === "student"
+                    : item.role?.toLowerCase() === "staff"
+            );
+            setSearchResults(filteredResults);
+        } catch (err) {
+            console.error("Search failed:", err);
+            setSearchResults([]);
+            alert("Search failed. Please try again.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
 
     return (
         <div className="min-h-screen flex flex-col bg-gray-100">
@@ -24,9 +49,7 @@ const AdminSearchPage = () => {
                 <div className="container mx-auto flex justify-between items-center">
                     <h1 className="text-2xl font-bold">EduTrack Admin</h1>
                     <nav className="hidden md:flex space-x-4">
-                        <a href="#" className="hover:text-blue-200">
-                            <Link to="/admin-dashboard">Dashboard</Link>
-                        </a>
+                        <Link to="/admin-dashboard" className="hover:text-blue-200">Dashboard</Link>
                         <a href="#" className="hover:text-blue-200">
                             Students
                         </a>
@@ -49,15 +72,21 @@ const AdminSearchPage = () => {
                     <div className="flex mb-4">
                         <button
                             className={`flex-1 py-2 px-4 rounded-l-lg ${searchType === "student" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
-                            onClick={() => setSearchType("student")}
+                            onClick={() => {
+                                setSearchType("student");
+                                setSearchResults([]);
+                            }}
                         >
-                            <User className="inline-block mr-2" /> Search Student
+                            <User className="inline-block mr-2"/> Search Student
                         </button>
                         <button
-                            className={`flex-1 py-2 px-4 rounded-r-lg ${searchType === "staff" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
-                            onClick={() => setSearchType("staff")}
+                            className={`flex-1 py-2 px-4 rounded-l-lg ${searchType === "staff" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+                            onClick={() => {
+                                setSearchType("staff");
+                                setSearchResults([]);
+                            }}
                         >
-                            <Users className="inline-block mr-2" /> Search Staff
+                            <User className="inline-block mr-2"/> Search Staff
                         </button>
                     </div>
                     <form onSubmit={handleSearch} className="mb-4">
@@ -75,6 +104,7 @@ const AdminSearchPage = () => {
                         </div>
                     </form>
                     <div className="search-results">
+                        {loading && <p className="text-blue-500 mb-2">Searching...</p>}
                         {searchResults.map((result) => (
                             <div key={result.id} className="bg-gray-50 p-4 mb-2 rounded-lg hover:bg-gray-100">
                                 <h3 className="font-semibold">{result.name}</h3>
