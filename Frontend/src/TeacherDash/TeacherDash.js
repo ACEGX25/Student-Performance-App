@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {Briefcase, Award, Book, Star, MapPin, Calendar, BarChart, Users, ChevronRight} from 'lucide-react';
 import './TeacherDash.css';
 import { Link } from "react-router-dom";
+import TeacherTimetable from './Time-table'
 
 
 
@@ -98,7 +99,7 @@ const TeacherDashboard = () => {
                         </div>
                         <div className="column middle-column md:col-span-6">
                             <TeacherFeedback feedback={teacherData.sub_feedback}/>
-                            <TeacherTimetable timetableImage={teacherData.timetableImage}/>
+                            <TeacherTimetable department={teacherData.department} />
                         </div>
                        
                         <div className="column left-column md:col-span-3">
@@ -160,24 +161,6 @@ const TeacherFeedback = ({ feedback }) => {
                     </div>
                     <span className="text-sm font-medium text-gray-600">{feedback}/10</span>
                 </div>
-            </div>
-        </div>
-    );
-};
-
-const TeacherTimetable = ({ timetableImage }) => {
-    return (
-        <div className="teacher-timetable bg-white p-6 rounded-lg shadow-md hover-effect">
-            <h2 className="text-2xl font-bold mb-4 flex items-center">
-                <Calendar className="w-6 h-6 mr-2 text-blue-500" />
-                Weekly Timetable
-            </h2>
-            <div className="flex justify-center">
-                {timetableImage ? (
-                    <img src={`http:/timetable/view/${timetableImage}`} alt="Timetable"/>
-                ) : (
-                    <p>Timetable image not available</p>
-                )}
             </div>
         </div>
     );

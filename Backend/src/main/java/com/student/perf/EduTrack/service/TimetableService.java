@@ -2,6 +2,7 @@ package com.student.perf.EduTrack.service;
 
 import com.mongodb.client.gridfs.GridFSBucket;
 import com.mongodb.client.gridfs.GridFSBuckets;
+import com.mongodb.client.gridfs.model.GridFSFile;
 import com.mongodb.client.gridfs.model.GridFSUploadOptions;
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -20,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.regex.Matcher;
 
 @Service
 public class TimetableService {
@@ -80,7 +82,14 @@ public class TimetableService {
                 .getMetadata();
     }
 
+    // Get the latest timetable file for a given semester & department
+    public GridFSFile getLatestTimetableFile(String department) {
+        Document query = new Document("metadata.department", department);
 
+        return gridFSBucket.find(query)
+                .sort(new Document("uploadDate", -1))
+                .first();
+    }
 
 }
 

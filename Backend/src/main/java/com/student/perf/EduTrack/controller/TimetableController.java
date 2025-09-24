@@ -77,4 +77,30 @@ public class TimetableController {
                     .body("Error deleting timetable: " + e.getMessage());
         }
     }
+
+    @GetMapping("/latest")
+    @PreAuthorize("hasRole('staff')")
+    public ResponseEntity<?> getLatestTimetable(
+            @RequestParam("department") String department) {
+        try {
+            var latestFile = timetableService.getLatestTimetableFile(department);
+
+            if (latestFile == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("No timetable found for given semester and department");
+            }
+
+            InputStream imageStream = timetableService.getTimetableImage(latestFile.getObjectId().toHexString());
+            String contentType = latestFile.getMetadata().getString("contentType");
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_TYPE, contentType)
+                    .body(new InputStreamResource(imageStream));
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error retrieving timetable: " + e.getMessage());
+        }
+    }
+
 }

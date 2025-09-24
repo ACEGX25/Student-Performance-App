@@ -326,3 +326,12 @@ body {
   transform: translateY(-2px);
 }
 
+.teacher-timetable img {
+  transition: transform 0.2s;
+}
+.teacher-timetable img:hover {
+  transform: scale(1.05);
+  cursor: pointer;
+}
+
+
