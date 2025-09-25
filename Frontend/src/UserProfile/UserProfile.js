@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Pencil } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Pencil, ArrowLeft } from "lucide-react";
 import Cropper from "react-easy-crop";
 import "./UserProfile.css";
 
 function UserProfile() {
+  const navigate = useNavigate();
   const [userData, setUserData] = useState(null);
   const [editing, setEditing] = useState(false);
   const [editedData, setEditedData] = useState(null);
@@ -173,6 +175,11 @@ function UserProfile() {
     }
   };
 
+   const handleBack = () => {
+    const username = localStorage.getItem("username");
+    navigate(`/student/dashboard/${username}`);
+  };
+
   const handleCancel = () => {
     setEditedData(userData);
     setEditing(false);
@@ -192,16 +199,23 @@ function UserProfile() {
       </header>
 
       <div className="up-container">
-        <div className="up-breadcrumb">
-          <span className="up-breadcrumb-current">Account Home</span>
-        </div>
+        <div className="up-breadcrumb flex items-center gap-2 mb-4">
+  <button
+    onClick={handleBack}
+    className="flex items-center text-gray-600 hover:text-blue-600 transition"
+  >
+    <ArrowLeft className="w-5 h-5 mr-1" />
+  </button>
+  <h1 className="text-2xl font-bold">Profile Details</h1>
+</div>
+
 
         <div className="up-content">
           <div className="up-card">
             <div className="up-card-header">
               <div>
                 <h2 className="up-card-title">Photo</h2>
-                <div className="up-card-subtitle">150×150px JPEG, PNG Image</div>
+                <div className="up-card-subtitle">150x150px JPEG, PNG Image</div>
               </div>
             </div>
 
