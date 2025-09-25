@@ -81,9 +81,12 @@ public class TimetableController {
     @GetMapping("/latest")
     @PreAuthorize("hasRole('staff')")
     public ResponseEntity<?> getLatestTimetable(
-            @RequestParam("department") String department) {
+            @RequestParam("semester") String semester,
+            @RequestParam("department") String department
+    )
+    {
         try {
-            var latestFile = timetableService.getLatestTimetableFile(department);
+            var latestFile = timetableService.getLatestTimetableFile(semester,department);
 
             if (latestFile == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)

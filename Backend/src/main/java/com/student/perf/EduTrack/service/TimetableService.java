@@ -83,9 +83,9 @@ public class TimetableService {
     }
 
     // Get the latest timetable file for a given semester & department
-    public GridFSFile getLatestTimetableFile(String department) {
-        Document query = new Document("metadata.department", department);
-
+    public GridFSFile getLatestTimetableFile(String semester,String department) {
+        Document query = new Document("metadata.semester", semester).append("metadata.department", department );
+//"metadata.semester", semester
         return gridFSBucket.find(query)
                 .sort(new Document("uploadDate", -1))
                 .first();

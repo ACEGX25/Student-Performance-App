@@ -99,7 +99,7 @@ const TeacherDashboard = () => {
                         </div>
                         <div className="column middle-column md:col-span-6">
                             <TeacherFeedback feedback={teacherData.sub_feedback}/>
-                            <TeacherTimetable department={teacherData.department} />
+                            <TeacherTimetable semester={teacherData.semester} department={teacherData.department} />
                         </div>
                        
                         <div className="column left-column md:col-span-3">

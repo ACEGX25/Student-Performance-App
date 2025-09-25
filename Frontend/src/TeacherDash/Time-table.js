@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-const TeacherTimetable = ({ department, preview = false }) => {
+const TeacherTimetable = ({ semester,department, preview = false }) => {
     const [timetableUrl, setTimetableUrl] = useState(null);
     const [error, setError] = useState(null);
 
@@ -9,7 +9,7 @@ const TeacherTimetable = ({ department, preview = false }) => {
             try {
                 const token = localStorage.getItem("authToken");
                 const response = await fetch(
-                    `http://localhost:8080/timetables/latest?department=${department}`,
+                    `http://localhost:8080/timetables/latest?semester=${encodeURIComponent(semester)}&department=${encodeURIComponent(department)}`,
                     {
                         headers: { Authorization: `Bearer ${token}` },
                     }
@@ -29,7 +29,7 @@ const TeacherTimetable = ({ department, preview = false }) => {
         };
 
         fetchTimetable();
-    }, [department]);
+    }, [semester,department]);
 
     return (
         <div className={`teacher-timetable bg-white p-6 rounded-lg shadow-md hover-effect`}>
