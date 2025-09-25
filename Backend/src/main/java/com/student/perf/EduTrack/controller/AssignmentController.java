@@ -76,7 +76,7 @@ public class AssignmentController {
 
     // Endpoint to fetch all assignments (students, staff, admin can view)
     @GetMapping("/all")
-    @PreAuthorize("hasAnyAuthority('student','staff')")
+    @PreAuthorize("hasAnyRole('student','staff')")
     public ResponseEntity<?> getAllAssignments() {
         try {
             return ResponseEntity.ok(assignmentService.getAllAssignments());
