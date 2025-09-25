@@ -129,6 +129,7 @@ const TeacherProfile = ({ teacherData }) => {
             <h2 className="text-2xl font-bold mb-4">Staff Details</h2>
             <div className="profile-items">
                 <ProfileItem icon={Briefcase} label="Department" value={teacherData.department} />
+                <ProfileItem icon={Briefcase} label="Semester" value={teacherData.semester} />
                 <ProfileItem icon={Award} label="Experience" value={`${teacherData.experience} years`} />
                 <ProfileItem icon={Book} label="Expertise" value={teacherData.expertise} />
                 <ProfileItem icon={Award} label="Qualification" value={teacherData.qualification} />

@@ -19,6 +19,7 @@ import java.util.Date;
 public class Staff extends User {
 
     private String department;
+    private String semester;
     private String expertise;
     private int experience;
     private String qualification;
@@ -39,6 +40,10 @@ public class Staff extends User {
     public void setDepartment(String department) {
         this.department = department;
     }
+
+    public String getSemester() { return semester; }
+
+    public void setSemester(String semester) { this.semester = semester; }
 
     public String getExpertise() {
         return expertise;

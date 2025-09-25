@@ -76,6 +76,9 @@ public class StaffController {
         if (updatedDetails.getDepartment() != null) {
             staff.setDepartment(updatedDetails.getDepartment());
         }
+        if (updatedDetails.getSemester() != null) {
+            staff.setSemester(updatedDetails.getSemester());
+        }
         if (updatedDetails.getExpertise() != null) {
             staff.setExpertise(updatedDetails.getExpertise());
         }
