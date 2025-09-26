@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, User, Lock, Mail } from 'lucide-react';
 import './AuthPage.css';
 
-
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
@@ -16,46 +15,12 @@ const AuthPage = () => {
   const [role, setRole] = useState('student');
   const [errors, setErrors] = useState({});
   const [message, setMessage] = useState('');
+
   const navigate = useNavigate();
 
   const validatePassword = (password) => {
     const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])/;
     return regex.test(password);
-  };
-
-  const handleAdminLogin = async (username, password) => {
-    try {
-      const url = 'http://localhost:8080/api/auth/login';
-      const payload = { username, password };
-
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Admin Login Response:', data);
-
-        // Verify if the role is "admin"
-        if (data.role === 'Admin') {
-          localStorage.setItem('authToken', data.token);
-          localStorage.setItem('role', data.role);
-          localStorage.setItem('username', data.username);
-
-          navigate('/admin-dashboard');
-          window.location.reload();
-        } else {
-          setMessage('You are not authorized as an admin.');
-        }
-      } else {
-        const result = await response.json();
-        setMessage(result.message || 'Admin login failed');
-      }
-    } catch (error) {
-      setMessage('Error: ' + error.message);
-    }
   };
 
   const handleSubmit = async (e) => {
@@ -74,80 +39,75 @@ const AuthPage = () => {
       }
     }
 
-    if (Object.keys(newErrors).length === 0) {
-      try {
-        const url = isLogin ? 'http://localhost:8080/api/auth/login' : 'http://localhost:8080/api/auth/signup';
-        const payload = isLogin
-            ? { username, password }
-            : { username, email, password, role, name };
-
-        const response = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          console.log('Login Response:', data); // Debugging response from the backend
-
-          if (isLogin) {
-            if (data.role === 'admin') {
-              // Use the admin-specific login handler
-              await handleAdminLogin(username, password);
-            } else {
-              localStorage.setItem('authToken', data.token);
-              localStorage.setItem('role', data.role);
-              localStorage.setItem('username', data.username);
-              localStorage.setItem('detailsFilled',data.detailsFilled)
-
-              //redirect based on role
-              if (data.role === 'Admin') {
-                navigate('/admin-dashboard');
-              } else if (data.role === 'student') {
-                if (data.detailsFilled) {
-                  navigate(`/student/dashboard/${data.username}`);
-                } else {
-                  navigate('/fill-details');
-                }
-              } else if (data.role === 'staff') {
-                if (data.detailsFilled) {
-                  navigate(`/staff/dashboard/${data.username}`);
-                } else {
-                  navigate('/fill-details');
-                }
-              } else {
-                navigate('/fill-details'); // fallback
-              }
-
-
-              window.location.reload();
-            }
-          } else {
-            setMessage('Account Created Successfully! Redirecting you to the login, Please Wait!');
-            setTimeout(() => {
-              setIsLogin(true);
-              setMessage('');
-            }, 3000);
-          }
-        } else {
-          const result = await response.json();
-          setMessage(result.message || 'Authentication failed');
-        }
-      } catch (error) {
-        setMessage('Error: ' + error.message);
-      }
-    } else {
+    if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
+      return;
+    }
+
+    try {
+      const url = isLogin ? 'http://localhost:8080/api/auth/login' : 'http://localhost:8080/api/auth/signup';
+      const payload = isLogin
+        ? { username, password }
+        : { username, email, password, role, name };
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        credentials: 'include', // important for cookies
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setMessage(data.message || 'Authentication failed');
+        return;
+      }
+
+      if (isLogin) {
+        // Save only non-sensitive info
+        localStorage.setItem('username', data.username);
+        localStorage.setItem('role', data.role);
+
+        // Redirect based on role
+        if (data.role === 'Admin') navigate('/admin-dashboard');
+        else if (data.role === 'student') {
+          navigate(data.detailsFilled ? `/student/dashboard/${data.username}` : '/fill-details');
+        } else if (data.role === 'staff') {
+          navigate(data.detailsFilled ? `/staff/dashboard/${data.username}` : '/fill-details');
+        } else {
+          navigate('/fill-details');
+        }
+      } else {
+        setMessage('Account created successfully! Redirecting to login...');
+        setTimeout(() => {
+          setIsLogin(true);
+          setMessage('');
+        }, 3000);
+      }
+    } catch (error) {
+      setMessage('Error: ' + error.message);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await fetch('http://localhost:8080/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include',
+      });
+      localStorage.removeItem('username');
+      localStorage.removeItem('role');
+      navigate('/authpage');
+    } catch (err) {
+      console.error('Logout failed', err);
     }
   };
 
   return (
     <div className="auth-page">
       <div className="auth-container">
-        <h2 className="auth-title">
-          {isLogin ? 'Sign in to your account' : 'Create a new account'}
-        </h2>
+        <h2 className="auth-title">{isLogin ? 'Sign in to your account' : 'Create a new account'}</h2>
 
         <form className="auth-form" onSubmit={handleSubmit}>
           {!isLogin && (
@@ -216,11 +176,7 @@ const AuthPage = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="password-toggle"
-              >
+              <button type="button" onClick={() => setShowPassword(!showPassword)} className="password-toggle">
                 {showPassword ? <EyeOff className="input-icon" /> : <Eye className="input-icon" />}
               </button>
             </div>
@@ -249,12 +205,7 @@ const AuthPage = () => {
           {!isLogin && (
             <div className="form-group">
               <label htmlFor="role">Role</label>
-              <select
-                id="role"
-                name="role"
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-              >
+              <select id="role" name="role" value={role} onChange={(e) => setRole(e.target.value)}>
                 <option value="student">Student</option>
                 <option value="staff">Staff</option>
               </select>

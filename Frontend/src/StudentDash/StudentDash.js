@@ -1,9 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, Book, Calendar, ChevronRight, User, BarChart, Activity, Hash, AtSign, Briefcase, Users, Mail } from 'lucide-react';
-import './StudentDash.css'
-import { Link } from 'react-router-dom';
-import pic1 from'../../src/assets/nigga.jpeg'
-import { useHistory } from 'react-router-dom';
+import { Bell, Book, Calendar, ChevronRight, User, Hash, AtSign, Briefcase, Users, Mail } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import './StudentDash.css';
+
+// Wrapper to handle access token expiry and refresh automatically
+const fetchWithRefresh = async (url, options = {}) => {
+  options.credentials = 'include'; // send cookies
+
+  let response = await fetch(url, options);
+
+  if (response.status === 401) {
+    // Access token expired, try to refresh
+    const refreshResponse = await fetch('http://localhost:8080/api/auth/refresh', {
+      method: 'POST',
+      credentials: 'include'
+    });
+
+    if (refreshResponse.ok) {
+      // Retry original request
+      response = await fetch(url, options);
+    } else {
+      throw new Error('Session expired. Please log in again.');
+    }
+  }
+
+  return response;
+};
 
 const StudentDash = () => {
   const [notifications, setNotifications] = useState([]);
@@ -12,31 +34,24 @@ const StudentDash = () => {
   const [error, setError] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-  
-        const token = localStorage.getItem('authToken');
-        const username = localStorage.getItem('username');
-  
-        if (!username) {
-          throw new Error('Username not available. Please log in again.');
-        }
-  
-        const response = await fetch(`http://localhost:8080/api/student/dashboard/${username}`, {
+
+        const username = localStorage.getItem('username'); // still OK for API endpoint
+
+        if (!username) throw new Error('Username not available. Please log in again.');
+
+        const response = await fetchWithRefresh(`http://localhost:8080/api/student/dashboard/${username}`, {
           method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include', 
+          headers: { 'Content-Type': 'application/json' }
         });
-  
-        if (!response.ok) {
-          throw new Error('Failed to fetch student data');
-        }
-  
+
+        if (!response.ok) throw new Error('Failed to fetch student data');
+
         const data = await response.json();
         console.log('API Response:', data);
         setStudentData(data);
@@ -47,22 +62,27 @@ const StudentDash = () => {
         setLoading(false);
       }
     };
-  
+
     fetchData();
   }, []);
-  
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
 
-  const handleLogout = () => {
-    // Clear auth token and username from localStorage
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('username');
-    localStorage.removeItem('role');
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
-    // Redirect to the login page
-    window.location.href = '/authpage';
+  const handleLogout = async () => {
+    try {
+      await fetch('http://localhost:8080/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include'
+      });
+
+      // Clear localStorage for non-sensitive info
+      localStorage.removeItem('username');
+      localStorage.removeItem('role');
+
+      navigate('/authpage');
+    } catch (err) {
+      console.error('Logout failed:', err);
+    }
   };
 
   const CircularProgressBar = ({ percentage, label, color }) => (
@@ -75,7 +95,7 @@ const StudentDash = () => {
         />
         <path className="circle"
           strokeDasharray={`${percentage}, 100`}
-          style={{stroke: color}}
+          style={{ stroke: color }}
           d="M18 2.0845
             a 15.9155 15.9155 0 0 1 0 31.831
             a 15.9155 15.9155 0 0 1 0 -31.831"
@@ -90,31 +110,23 @@ const StudentDash = () => {
   if (error) return <div className="error">{error}</div>;
 
   return (
-      <div className="min-h-screen flex flex-col bg-gray-100" id='daddy'>
-        <ul class="circles">
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-        </ul>
-  <header className="app-header text-white p-4">
-    <div className="container mx-auto flex justify-between items-center">
-      <h1 className="text-2xl font-bold">EduTrack</h1>
-      <nav className={`md:flex space-x-4 ${isMenuOpen ? 'block' : 'hidden'}`}>
-        <a href="#" className="block md:inline-block py-2 hover:text-blue-200">Dashboard</a>
+    <div className="min-h-screen flex flex-col bg-gray-100" id="daddy">
+      <ul className="circles">
+        {Array.from({ length: 10 }).map((_, i) => <li key={i}></li>)}
+      </ul>
+
+      <header className="app-header text-white p-4">
+        <div className="container mx-auto flex justify-between items-center">
+          <h1 className="text-2xl font-bold">EduTrack</h1>
+          <nav className={`md:flex space-x-4 ${isMenuOpen ? 'block' : 'hidden'}`}>
+            <a href="#" className="block md:inline-block py-2 hover:text-blue-200">Dashboard</a>
             <a href="#" className="block md:inline-block py-2 hover:text-blue-200">Exams</a>
             <a href="#" className="block md:inline-block py-2 hover:text-blue-200">Assignments</a>
             <a href="/student/viewresult" className="block md:inline-block py-2 hover:text-blue-200">Results</a>
             <a href="#" className="block md:inline-block py-2 hover:text-blue-200" onClick={handleLogout}>Logout</a>
           </nav>
           <button className="md:hidden" onClick={toggleMenu}>
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
@@ -126,15 +138,12 @@ const StudentDash = () => {
           <div className="flex items-center relative z-10">
             <div className="mr-6">
               <img
-                  src={studentData?.photo 
-                  ? `data:image/jpeg;base64,${studentData.photo}` 
-                   : '/placeholder.svg?height=100&width=100'}
-                   alt={`${studentData?.name || "User"}'s profile`}
-                    className="w-24 h-24 rounded-full object-cover border-4 border-blue-500"
-                  />
-
+                src={studentData?.photo ? `data:image/jpeg;base64,${studentData.photo}` : '/placeholder.svg?height=100&width=100'}
+                alt={`${studentData?.name || "User"}'s profile`}
+                className="w-24 h-24 rounded-full object-cover border-4 border-blue-500"
+              />
             </div>
-            <h2 className="text-3xl font-semibold" id='aloha'>Welcome, {studentData?.name || 'Student'}!</h2>
+            <h2 className="text-3xl font-semibold" id="aloha">Welcome, {studentData?.name || 'Student'}!</h2>
           </div>
           <div className="shape circle1"></div>
           <div className="shape circle2"></div>
@@ -185,9 +194,9 @@ const StudentDash = () => {
         </div>
 
         {studentData && (
-          <div className="mt-8 bg-white p-6 rounded-lg shadow-md hover-effect " id='chutiya'>
+          <div className="mt-8 bg-white p-6 rounded-lg shadow-md hover-effect">
             <h3 className="text-2xl font-semibold mb-4">Student Profile</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6" id='gone'>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-10 text-lg">
                 <div className="flex items-center text-lg hover-effect p-0.5">
                   <User className="w-6 h-6 text-blue-500 mr-3" />
@@ -201,7 +210,7 @@ const StudentDash = () => {
                   <AtSign className="w-6 h-6 text-yellow-500 mr-3" />
                   <p><strong>Username:</strong> {studentData.username}</p>
                 </div>
-                <div className="flex items-center text-lg  hover-effect p-0.5">
+                <div className="flex items-center text-lg hover-effect p-0.5">
                   <Mail className="w-6 h-6 text-blue-500 mr-3" />
                   <p><strong>Email:</strong> {studentData.email}</p>
                 </div>
@@ -209,29 +218,28 @@ const StudentDash = () => {
                   <Briefcase className="w-6 h-6 text-purple-500 mr-3" />
                   <p><strong>Department:</strong> {studentData.department}</p>
                 </div>
-                <div className="flex items-center text-lg  hover-effect p-0.5">
+                <div className="flex items-center text-lg hover-effect p-0.5">
                   <Users className="w-6 h-6 text-red-500 mr-3" />
                   <p><strong>Gender:</strong> {studentData.gender}</p>
                 </div>
               </div>
-              <div className='hope'>
-                <div className="mb-4" id='headache'>
-                  <h4 className="text-2xl font-semibold mb-5">Attendance</h4>
-                  <div className="w-full bg-gray-200 rounded-full h-2.5">
-                    <div className="bg-blue-600 h-2.5 rounded-full" style={{width: `${studentData.attendance}%`}}></div>
-                  </div>
-                  <p className="text-sm text-gray-600 mt-1">{studentData.attendance}% attendance</p>
+              <div>
+                <h4 className="text-2xl font-semibold mb-5">Attendance</h4>
+                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                  <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${studentData.attendance}%` }}></div>
                 </div>
-                <h4 className="text-2xl font-semibold mb-5">Performance</h4>
-                <div className="flex justify-evenly mb-4" id='mean'>
-                  <CircularProgressBar 
-                    percentage={studentData.previous_scores} 
-                    label="Previous Scores" 
+                <p className="text-sm text-gray-600 mt-1">{studentData.attendance}% attendance</p>
+
+                <h4 className="text-2xl font-semibold mb-5 mt-6">Performance</h4>
+                <div className="flex justify-evenly mb-4">
+                  <CircularProgressBar
+                    percentage={studentData.previous_scores}
+                    label="Previous Scores"
                     color="#2ecc71"
                   />
-                  <CircularProgressBar 
-                    percentage={studentData.exam_score} 
-                    label="Recent Exam Score" 
+                  <CircularProgressBar
+                    percentage={studentData.exam_score}
+                    label="Recent Exam Score"
                     color="#e74c3c"
                   />
                 </div>
@@ -251,4 +259,3 @@ const StudentDash = () => {
 };
 
 export default StudentDash;
-

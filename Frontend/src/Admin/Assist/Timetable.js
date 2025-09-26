@@ -24,65 +24,59 @@ export default function TimetableUpload() {
         }
     };
 
-    const handleUpload = async () => {
-        if (!selectedFile || !semester || !department) {
-            alert('Please select both semester and department.');
-            return;
+   const handleUpload = async () => {
+    if (!selectedFile || !semester || !department) {
+        alert('Please select both semester and department.');
+        return;
+    }
+
+    setUploading(true);
+    setUploadError(null);
+
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+    formData.append('semester', semester);
+    formData.append('department', department);
+
+    try {
+        // No need to get token from localStorage
+        const response = await fetch('http://localhost:8080/timetables/upload', {
+            method: 'POST',
+            credentials: 'include', // <-- automatically sends HTTP-only cookies
+            body: formData,
+        });
+
+        if (response.ok) {
+            const result = await response.text();
+            console.log('Raw Response:', result);
+
+            // Simulate upload progress
+            let uploadInterval = setInterval(() => {
+                setProgress((prev) => {
+                    if (prev >= 100) {
+                        clearInterval(uploadInterval);
+                        setSelectedFile(null);
+                        setPreview(null);
+                        setSemester('');
+                        setDepartment('');
+                        return 100;
+                    }
+                    return prev + 10;
+                });
+            }, 200);
+
+            // Simulate upload delay
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+        } else {
+            throw new Error('Failed to upload timetable');
         }
-
-        setUploading(true);
-        setUploadError(null);
-        
-            // Prepare the data for uploading
-            const formData = new FormData();
-            formData.append('file', selectedFile);
-            formData.append('semester', semester);
-            formData.append('department', department);
-            try {
-            const token = localStorage.getItem('authToken');
-            const username = localStorage.getItem('username');
-
-            // Send the POST request
-            const response = await fetch('http://localhost:8080/timetables/upload', {
-                method: 'POST',
-                
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: formData,
-            });
-
-            if (response.ok) {
-                const result = await response.text();
-                console.log('Raw Response:', result);
-
-                // Simulate upload progress
-                let uploadInterval = setInterval(() => {
-                    setProgress((prev) => {
-                        if (prev >= 100) {
-                            clearInterval(uploadInterval);
-                            setSelectedFile(null);
-                            setPreview(null);
-                            setSemester('');
-                            setDepartment('');
-                            return 100;
-                        }
-                        return prev + 10;
-                    });
-                }, 200);
-
-                // Simulate upload delay
-                await new Promise((resolve) => setTimeout(resolve, 2000));
-            } else {
-                throw new Error('Failed to upload timetable');
-            }
-        } catch (error) {
-            console.error('Upload failed:', error);
-            setUploadError('Failed to upload the timetable. Please try again.');
-        } finally {
-            setUploading(false);
-        }
-    };
+    } catch (error) {
+        console.error('Upload failed:', error);
+        setUploadError('Failed to upload the timetable. Please try again.');
+    } finally {
+        setUploading(false);
+    }
+};
 
     return (
         <div className="p-8 space-y-8">

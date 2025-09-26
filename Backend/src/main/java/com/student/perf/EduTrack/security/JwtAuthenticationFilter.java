@@ -3,6 +3,7 @@ package com.student.perf.EduTrack.security;
 import com.student.perf.EduTrack.config.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,44 +30,42 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
+
+        String token = null;
+
+        // 1️⃣ Check Authorization header first
         final String authHeader = request.getHeader("Authorization");
-
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            chain.doFilter(request, response);
-            return;
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            token = authHeader.substring(7);
         }
 
-        final String token = authHeader.substring(7);
-
-        String username = null;
-        try {
-            // Extract username from token
-            username = jwtUtil.extractUsername(token);
-        } catch (Exception e) {
-            System.err.println("JWT Token parsing failed: " + e.getMessage());
+        // 2️⃣ If header missing, check cookies
+        if (token == null && request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("accessToken".equals(cookie.getName())) {
+                    token = cookie.getValue();
+                    break;
+                }
+            }
         }
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        // 3️⃣ Validate token and set authentication
+        if (token != null) {
             try {
-                // Load user details
-                System.out.println("Username from JWT: " + username);
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                System.out.println("UserDetails: " + userDetails.getUsername());
-                System.out.println("Authorities: " + userDetails.getAuthorities());
+                String username = jwtUtil.extractUsername(token);
 
-                // Validate the token
-                if (jwtUtil.validateToken(token, userDetails.getUsername())) {
-                    UsernamePasswordAuthenticationToken authToken =
-                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-                    // Set the authentication in the SecurityContext
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
-                } else {
-                    System.err.println("JWT Token validation failed for user: " + username);
+                    if (jwtUtil.validateToken(token, userDetails.getUsername())) {
+                        UsernamePasswordAuthenticationToken authToken =
+                                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        SecurityContextHolder.getContext().setAuthentication(authToken);
+                    }
                 }
             } catch (Exception e) {
-                System.err.println("User authentication failed: " + e.getMessage());
+                System.err.println("JWT authentication failed: " + e.getMessage());
             }
         }
 

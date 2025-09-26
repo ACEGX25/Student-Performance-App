@@ -10,12 +10,11 @@ const Admin = () => {
     useEffect(() => {
     try {
       setLoading(true);
-
-      const token = localStorage.getItem('authToken');
+      
       const username = localStorage.getItem('username');
       const role = localStorage.getItem('role');
 
-      if (!token || !username || role !== "Admin") {
+      if (!username || role !== "Admin") {
         throw new Error('Not authenticated. Please log in again.');
         }
 
@@ -102,6 +101,26 @@ const Admin = () => {
         }
     ];
 
+    const handleLogout = async () => {
+    try {
+    // Call backend logout endpoint
+    const response = await fetch('http://localhost:8080/api/auth/logout', {
+      method: 'POST',
+      credentials: 'include', // include HTTP-only cookie
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to logout');
+    }
+
+    // Redirect to login page
+    navigate('/authpage');
+     } catch (err) {
+    console.error('Logout error:', err.message);
+    }
+    };
+
+
     const toggleDropdown = (dropdown) => {
         setOpenDropdown(openDropdown === dropdown ? null : dropdown);
     };
@@ -155,6 +174,13 @@ const Admin = () => {
 
                             >
                                 <i className="edutrack-admin__icon">✓</i> Approve
+                            </button>
+                        </li>
+                        <li>
+                            <button
+                                 className="edutrack-admin__nav-button" onClick={handleLogout}
+                            >
+                                <i className="edutrack-admin__icon">✖️</i> Logout
                             </button>
                         </li>
                     </ul>

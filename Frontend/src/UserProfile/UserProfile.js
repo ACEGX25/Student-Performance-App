@@ -18,37 +18,35 @@ function UserProfile() {
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const token = localStorage.getItem("authToken");
-        const username = localStorage.getItem("username");
-        if (!username) throw new Error("Username not available. Please log in again.");
+  const fetchUserData = async () => {
+    try {
+      const username = localStorage.getItem("username"); // still needed for URL
+      if (!username) throw new Error("Username not available. Please log in again.");
 
-        const res = await fetch(`http://localhost:8080/api/student/dashboard/${username}`, {
-          method: "GET",
-          headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-          credentials: "include",
-        });
+      const res = await fetch(`http://localhost:8080/api/student/dashboard/${username}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" }, // remove Authorization header
+        credentials: "include", // send httpOnly cookies automatically
+      });
 
-        if (!res.ok) throw new Error("Failed to fetch user data");
-        const data = await res.json();
+      if (!res.ok) throw new Error("Failed to fetch user data");
+      const data = await res.json();
 
-        setUserData(data);
-        setEditedData(data);
+      setUserData(data);
+      setEditedData(data);
 
-        // backend now returns base64 photo if available
-        if (data.photo) {
-          setProfilePicture(`data:image/jpeg;base64,${data.photo}`);
-        } else {
-          setProfilePicture(null);
-        }
-      } catch (err) {
-        console.error("Error fetching user data:", err);
+      if (data.photo) {
+        setProfilePicture(`data:image/jpeg;base64,${data.photo}`);
+      } else {
+        setProfilePicture(null);
       }
-    };
+    } catch (err) {
+      console.error("Error fetching user data:", err);
+    }
+  };
 
-    fetchUserData();
-  }, []);
+  fetchUserData();
+}, []);
 
   // lock body scroll while cropper open
   useEffect(() => {
@@ -134,46 +132,44 @@ function UserProfile() {
   };
 
   const handleSave = async () => {
-    try {
-      const token = localStorage.getItem("authToken");
-      const username = localStorage.getItem("username");
-      if (!username) throw new Error("Username not available");
+  try {
+    const username = localStorage.getItem("username");
+    if (!username) throw new Error("Username not available");
 
-      const formData = new FormData();
+    const formData = new FormData();
 
-      // Append student JSON as "student"
-      formData.append(
-        "student",
-        new Blob([JSON.stringify(editedData)], { type: "application/json" })
-      );
+    formData.append(
+      "student",
+      new Blob([JSON.stringify(editedData)], { type: "application/json" })
+    );
 
-      // Append photo if user selected one
-      if (profilePicture instanceof File) {
-        formData.append("photo", profilePicture);
-      }
-
-      const response = await fetch(`http://localhost:8080/api/student/update/${username}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        credentials: "include",
-        body: formData,
-      });
-
-      if (!response.ok) throw new Error("Failed to update user data");
-      const updatedData = await response.json();
-      setUserData(updatedData);
-      setEditedData(updatedData);
-      setEditing(false);
-
-      if (updatedData.photo) {
-        setProfilePicture(`data:image/jpeg;base64,${updatedData.photo}`);
-      }
-    } catch (err) {
-      console.error("Error updating user data:", err);
+    if (profilePicture instanceof File) {
+      formData.append("photo", profilePicture);
     }
-  };
+
+    const response = await fetch(`http://localhost:8080/api/student/update/${username}`, {
+      method: "PUT",
+      headers: {
+        // Remove Authorization header
+      },
+      credentials: "include", // send httpOnly cookies automatically
+      body: formData,
+    });
+
+    if (!response.ok) throw new Error("Failed to update user data");
+    const updatedData = await response.json();
+    setUserData(updatedData);
+    setEditedData(updatedData);
+    setEditing(false);
+
+    if (updatedData.photo) {
+      setProfilePicture(`data:image/jpeg;base64,${updatedData.photo}`);
+    }
+  } catch (err) {
+    console.error("Error updating user data:", err);
+  }
+};
+
 
    const handleBack = () => {
     const username = localStorage.getItem("username");

@@ -69,10 +69,8 @@ export default function ProfileCompletion() {
 
         const response = await fetch(url, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + localStorage.getItem('authToken')
-          }, // JSON header
-          body: JSON.stringify(payload), // send JSON
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include' // ✅ send httpOnly cookie automatically
         });
 
         if (response.ok) {

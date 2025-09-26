@@ -5,31 +5,32 @@ const TeacherTimetable = ({ semester,department, preview = false }) => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const fetchTimetable = async () => {
-            try {
-                const token = localStorage.getItem("authToken");
-                const response = await fetch(
-                    `http://localhost:8080/timetables/latest?semester=${encodeURIComponent(semester)}&department=${encodeURIComponent(department)}`,
-                    {
-                        headers: { Authorization: `Bearer ${token}` },
-                    }
-                );
-
-                if (!response.ok) {
-                    throw new Error("No timetable available for your department");
+    const fetchTimetable = async () => {
+        try {
+            // no token from localStorage
+            const response = await fetch(
+                `http://localhost:8080/timetables/latest?semester=${encodeURIComponent(semester)}&department=${encodeURIComponent(department)}`,
+                {
+                    credentials: "include", // send httpOnly cookie automatically
                 }
+            );
 
-                const blob = await response.blob();
-                const imageUrl = URL.createObjectURL(blob);
-                setTimetableUrl(imageUrl);
-            } catch (err) {
-                console.error(err);
-                setError(err.message);
+            if (!response.ok) {
+                throw new Error("No timetable available for your department");
             }
-        };
 
-        fetchTimetable();
-    }, [semester,department]);
+            const blob = await response.blob();
+            const imageUrl = URL.createObjectURL(blob);
+            setTimetableUrl(imageUrl);
+        } catch (err) {
+            console.error(err);
+            setError(err.message);
+        }
+    };
+
+    fetchTimetable();
+}, [semester, department]);
+
 
     return (
         <div className={`teacher-timetable bg-white p-6 rounded-lg shadow-md hover-effect`}>

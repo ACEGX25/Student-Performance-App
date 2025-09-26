@@ -7,31 +7,29 @@ const FullTimetablePage = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const fetchTeacherData = async () => {
-            try {
-                const token = localStorage.getItem("authToken");
-                const username = localStorage.getItem("username");
+    const fetchTeacherData = async () => {
+        try {
+            const response = await fetch(
+                `http://localhost:8080/api/staff/dashboard`, // remove username from URL if backend can detect from cookie
+                {
+                    credentials: "include", // send httpOnly cookie automatically
+                }
+            );
 
-                const response = await fetch(
-                    `http://localhost:8080/api/staff/dashboard/${username}`,
-                    {
-                        headers: { Authorization: `Bearer ${token}` },
-                    }
-                );
+            if (!response.ok) throw new Error("Failed to fetch staff data");
 
-                if (!response.ok) throw new Error("Failed to fetch staff data");
+            const data = await response.json();
+            setTeacherData(data);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-                const data = await response.json();
-                setTeacherData(data);
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
+    fetchTeacherData();
+}, []);
 
-        fetchTeacherData();
-    }, []);
 
     if (loading) return <p>Loading timetable...</p>;
     if (error) return <p>Error: {error}</p>;

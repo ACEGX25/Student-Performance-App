@@ -9,31 +9,30 @@ const Assignments = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const fetchAssignments = async () => {
-            try {
-                const token = localStorage.getItem('authToken');
+    const fetchAssignments = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/assignments/all', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include', // send HTTP-only cookies
+            });
 
-                const response = await fetch('http://localhost:8080/assignments/all', {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                    },
-                });
+            if (!response.ok) throw new Error('Failed to fetch assignments');
 
-                if (!response.ok) throw new Error('Failed to fetch assignments');
+            const data = await response.json();
+            setAssignments(data);
+            setLoading(false);
+        } catch (err) {
+            setError(err.message);
+            setLoading(false);
+        }
+    };
 
-                const data = await response.json();
-                setAssignments(data);
-                setLoading(false);
-            } catch (err) {
-                setError(err.message);
-                setLoading(false);
-            }
-        };
+    fetchAssignments();
+}, []);
 
-        fetchAssignments();
-    }, []);
 
     if (loading) return <p className="text-gray-600 text-center mt-6">Loading assignments...</p>;
     if (error) return <p className="text-red-500 text-center mt-6">Error: {error}</p>;

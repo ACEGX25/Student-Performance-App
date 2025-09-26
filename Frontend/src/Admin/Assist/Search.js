@@ -12,35 +12,36 @@ const AdminSearchPage = () => {
     const token = localStorage.getItem("authToken");
 
 
-    const handleSearch = async (e) => {
-        e.preventDefault();
-        if (!searchQuery.trim()) {
-            setSearchResults([]);
-            alert("Please enter a search term.");
-            return;
-        }
+   const handleSearch = async (e) => {
+    e.preventDefault();
+    if (!searchQuery.trim()) {
+        setSearchResults([]);
+        alert("Please enter a search term.");
+        return;
+    }
 
-        setLoading(true);
-        try {
-            const res = await axios.get(`http://localhost:8080/search/users`, { params: { query: searchQuery },
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            const filteredResults = res.data.filter(item =>
-                searchType === "student"
-                    ? item.role?.toLowerCase() === "student"
-                    : item.role?.toLowerCase() === "staff"
-            );
-            setSearchResults(filteredResults);
-        } catch (err) {
-            console.error("Search failed:", err);
-            setSearchResults([]);
-            alert("Search failed. Please try again.");
-        } finally {
-            setLoading(false);
-        }
-    };
+    setLoading(true);
+    try {
+        const res = await axios.get(`http://localhost:8080/search/users`, {
+            params: { query: searchQuery },
+            withCredentials: true // <-- sends HTTP-only cookie automatically
+        });
+
+        const filteredResults = res.data.filter(item =>
+            searchType === "student"
+                ? item.role?.toLowerCase() === "student"
+                : item.role?.toLowerCase() === "staff"
+        );
+        setSearchResults(filteredResults);
+    } catch (err) {
+        console.error("Search failed:", err);
+        setSearchResults([]);
+        alert("Search failed. Please try again.");
+    } finally {
+        setLoading(false);
+    }
+};
+
 
 
     return (

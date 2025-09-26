@@ -20,6 +20,7 @@ import java.util.Arrays;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
@@ -39,39 +40,36 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Enable CORS
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable()) // Disable CSRF for API
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/auth/**").permitAll() // Allow login, register, and logout
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/student/**").hasAuthority("student")
                         .requestMatchers("/api/staff/**").hasAuthority("staff")
                         .requestMatchers("/api/admin/**").hasAuthority("admin")
-                        .requestMatchers("/assignments/**").hasAnyAuthority("staff", "student")
-                        .requestMatchers("/search/**").hasAnyAuthority("Admin", "staff") // Add `/search` rules
-                        .anyRequest().authenticated()               // Secure other endpoints
+                        .anyRequest().authenticated()
                 )
                 .logout(logout -> logout
-                        .logoutUrl("/api/auth/logout")  // Logout endpoint
+                        .logoutUrl("/api/auth/logout")
                         .logoutSuccessHandler((request, response, authentication) -> {
-                            response.setStatus(200); // Send HTTP 200 status on success
+                            response.setStatus(200);
                             response.getWriter().write("Logged out successfully!");
                         })
-                        .invalidateHttpSession(true)   // Invalidate session
-                        .deleteCookies("JSESSIONID")   // Remove cookies
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID", "accessToken", "refreshToken")
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 
-
-    // Configure CORS policy
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // Frontend URL
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // HTTP Methods
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type")); // Headers
-        configuration.setAllowCredentials(true); // Enable cookies and tokens
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+        configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

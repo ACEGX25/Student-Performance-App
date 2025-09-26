@@ -1,21 +1,21 @@
 package com.student.perf.EduTrack.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.student.perf.EduTrack.config.JwtUtil;
-import com.student.perf.EduTrack.model.DTOs.AdminUpdateDTO;
-import com.student.perf.EduTrack.model.DTOs.StaffUpdateDTO;
-import com.student.perf.EduTrack.model.DTOs.StudentUpdateDTO;
-import com.student.perf.EduTrack.model.Admin;
-import com.student.perf.EduTrack.model.Staff;
-import com.student.perf.EduTrack.model.Student;
 import com.student.perf.EduTrack.model.User;
+import com.student.perf.EduTrack.model.RefreshToken;
+import com.student.perf.EduTrack.service.RefreshTokenService;
 import com.student.perf.EduTrack.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Cookie;
 import java.util.Map;
 
 @RestController
@@ -28,7 +28,12 @@ public class UserController {
     @Autowired
     private JwtUtil jwtUtil;
 
+    @Autowired
+    private RefreshTokenService refreshTokenService;
+
+    // =======================
     // Signup API
+    // =======================
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody User user) {
         try {
@@ -48,14 +53,15 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
 
         } catch (RuntimeException e) {
-            // Return structured error response
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
 
+    // =======================
     // Login API
+    // =======================
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> loginData) {
+    public ResponseEntity<?> login(@RequestBody Map<String, String> loginData, HttpServletResponse response) {
         try {
             // Input validation
             if (!loginData.containsKey("username") || loginData.get("username").trim().isEmpty()) {
@@ -65,44 +71,150 @@ public class UserController {
                 return ResponseEntity.badRequest().body(Map.of("error", "Password is required"));
             }
 
-            // Extract credentials
             String username = loginData.get("username");
             String password = loginData.get("password");
 
-            // Fetch user details (including role)
-            User user = userService.authenticateUser(username, password); // Assuming findByUsername() fetches the user
-
-            // **DEBUG LOGS**
-            System.out.println("Username: " + username); // Log input username
-            System.out.println("User: " + user);         // Log the fetched user object
-
+            // Authenticate user
+            User user = userService.authenticateUser(username, password);
             if (user == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body(Map.of("error", "Invalid username or password"));
             }
 
-            // Generate JWT token
-            String token = jwtUtil.generateToken(username);
+            // Generate JWT access token
+            String accessToken = jwtUtil.generateToken(username);
 
-            // Return token and role in response
+            // Generate refresh token and store in DB
+            RefreshToken refreshToken = refreshTokenService.createRefreshToken(username);
+
+            // Set httpOnly cookies
+            ResponseCookie accessCookie = ResponseCookie.from("accessToken", accessToken)
+                    .httpOnly(true).secure(true).sameSite("Strict").path("/")
+                    .maxAge(15 * 60) // 15 minutes
+                    .build();
+
+            ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refreshToken.getToken())
+                    .httpOnly(true).secure(true).sameSite("Strict").path("/")
+                    .maxAge(7 * 24 * 60 * 60) // 7 days
+                    .build();
+
+            response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
+            response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
+
+            // Return user info (without token in response)
             return ResponseEntity.ok(Map.of(
-                    "token", token,
-                    "role", user.getRole(), // Assuming getRole() fetches the role
-                        "username", username,
+                    "role", user.getRole(),
+                    "username", username,
                     "detailsFilled", user.isDetailsFilled()
             ));
 
         } catch (RuntimeException e) {
-            // Return error response
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
 
+    // =======================
     // Logout API
+    // =======================
     @PostMapping("/logout")
-    public ResponseEntity<?> logout() {
-        // Clear authentication and SecurityContext
+    public ResponseEntity<?> logout(HttpServletResponse response) {
+        // Clear backend refresh token
         SecurityContextHolder.clearContext();
+
+        ResponseCookie deleteAccess = ResponseCookie.from("accessToken", "")
+                .httpOnly(true).secure(true).path("/").maxAge(0).build();
+
+        ResponseCookie deleteRefresh = ResponseCookie.from("refreshToken", "")
+                .httpOnly(true).secure(true).path("/").maxAge(0).build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, deleteAccess.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, deleteRefresh.toString());
+
         return ResponseEntity.ok("Logged out successfully!");
     }
+
+
+    // =======================
+    // Refresh Token API
+    // =======================
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
+        // Extract refresh token from cookies
+        String refreshTokenValue = null;
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("refreshToken".equals(cookie.getName())) {
+                    refreshTokenValue = cookie.getValue();
+                    break;
+                }
+            }
+        }
+
+        if (refreshTokenValue == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "Refresh token not found"));
+        }
+
+        // Validate refresh token
+        if (!refreshTokenService.validateRefreshToken(refreshTokenValue)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "Invalid or expired refresh token"));
+        }
+
+        // Get username from refresh token
+        String username = refreshTokenService.findByToken(refreshTokenValue)
+                .map(rt -> rt.getUsername())
+                .orElse(null);
+
+        if (username == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "Invalid refresh token"));
+        }
+
+        // Generate new access token
+        String newAccessToken = jwtUtil.generateToken(username);
+
+        // Optionally, rotate refresh token
+        RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(username);
+        refreshTokenService.findByToken(refreshTokenValue)
+                .ifPresent(oldToken -> refreshTokenService.deleteByUsername(username)); // remove old token
+        // Set new cookies
+       /* ONLY FOR PRODUCTION!!!!!
+       ResponseCookie accessCookie = ResponseCookie.from("accessToken", newAccessToken)
+                .httpOnly(true).secure(true).sameSite("Strict").path("/")
+                .maxAge(15 * 60) // 15 minutes
+                .build();
+
+        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", newRefreshToken.getToken())
+                .httpOnly(true).secure(true).sameSite("Strict").path("/")
+                .maxAge(7 * 24 * 60 * 60) // 7 days
+                .build();
+          */
+        // FOR RUNNING ON LOCALHOST
+        ResponseCookie accessCookie = ResponseCookie.from("accessToken", newAccessToken)
+                .httpOnly(true)
+                .secure(false)        // false on localhost
+                .sameSite("Lax")      // or "None" + secure for cross-site
+                .path("/")
+                .maxAge(15 * 60) // 15 minutes
+                .build();
+
+        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", newRefreshToken.getToken())
+                .httpOnly(true)
+                .secure(false)
+                .sameSite("Lax")
+                .path("/")
+                .maxAge(7 * 24 * 60 * 60) // 7 days
+                .build();
+
+
+        response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
+
+        return ResponseEntity.ok(Map.of(
+                "message", "Access token refreshed",
+                "username", username
+        ));
+    }
+
 }

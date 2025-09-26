@@ -13,56 +13,62 @@ const TeacherDashboard = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setLoading(true);
+    const fetchData = async () => {
+        try {
+            setLoading(true);
 
-                const token = localStorage.getItem('authToken');
-                const username = localStorage.getItem('username');
+            const username = localStorage.getItem('username'); // still needed for URL
 
-                if (!username) {
-                    throw new Error('Username not available. Please log in again.');
-                }
-
-                const response = await fetch(`http://localhost:8080/api/staff/dashboard/${username}`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                    },
-                    credentials: 'include',
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch student data');
-                }
-
-                const data = await response.json();
-                console.log('API Response:', data);
-                setTeacherData(data);
-                setLoading(false);
-            } catch (err) {
-                setError(err.message);
-                setLoading(false);
+            if (!username) {
+                throw new Error('Username not available. Please log in again.');
             }
-        };
 
-        fetchData();
+            const response = await fetch(`http://localhost:8080/api/staff/dashboard/${username}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json', // no Authorization header
+                },
+                credentials: 'include', // send httpOnly cookies automatically
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch teacher data');
+            }
+
+            const data = await response.json();
+            console.log('API Response:', data);
+            setTeacherData(data);
+            setLoading(false);
+        } catch (err) {
+            setError(err.message);
+            setLoading(false);
+        }
+    };
+
+    fetchData();
     }, []);
+
 
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
       };
     
-      const handleLogout = () => {
-        // Clear auth token and username from localStorage
-        localStorage.removeItem('authToken');
+      const handleLogout = async () => {
+    try {
+        await fetch('http://localhost:8080/api/auth/logout', {
+            method: 'POST',
+            credentials: 'include', // clear httpOnly cookies
+        });
+
         localStorage.removeItem('username');
         localStorage.removeItem('role');
-    
-        // Redirect to the login page
+
         window.location.href = '/authpage';
-      };
+    } catch (err) {
+        console.error('Logout error:', err);
+    }
+};
+
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error}</p>;
