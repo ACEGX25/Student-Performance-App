@@ -20,6 +20,8 @@ public class User {
     private String email;
     private String password;
     private String role;
+    private boolean detailsFilled = false;
+
 
     public String getName() {
         return name;
@@ -49,4 +51,11 @@ public class User {
 
     public void setRole(String role) { this.role = role; }
 
+    public boolean isDetailsFilled() {
+        return detailsFilled;
+    }
+
+    public void setDetailsFilled(boolean detailsFilled) {
+        this.detailsFilled = detailsFilled;
+    }
 }

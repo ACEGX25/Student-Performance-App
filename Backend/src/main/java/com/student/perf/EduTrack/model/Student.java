@@ -160,4 +160,12 @@ public class Student extends User{
     public void setExam_score(int exam_score) {
         this.exam_score = exam_score;
     }
+
+    public Date getDate_of_birth() {
+        return date_of_birth;
+    }
+
+    public void setDate_of_birth(Date date_of_birth) {
+        this.date_of_birth = date_of_birth;
+    }
 }

@@ -99,11 +99,27 @@ const AuthPage = () => {
               localStorage.setItem('authToken', data.token);
               localStorage.setItem('role', data.role);
               localStorage.setItem('username', data.username);
+              localStorage.setItem('detailsFilled',data.detailsFilled)
 
-              // Redirect based on role
-              if (data.role === 'Student') navigate(`/student/dashboard/${data.username}`);
-              else if (data.role === 'staff') navigate(`/staff/dashboard/${data.username}`);
-              else navigate('/fill-details');
+              //redirect based on role
+              if (data.role === 'Admin') {
+                navigate('/admin-dashboard');
+              } else if (data.role === 'student') {
+                if (data.detailsFilled) {
+                  navigate(`/student/dashboard/${data.username}`);
+                } else {
+                  navigate('/fill-details');
+                }
+              } else if (data.role === 'staff') {
+                if (data.detailsFilled) {
+                  navigate(`/staff/dashboard/${data.username}`);
+                } else {
+                  navigate('/fill-details');
+                }
+              } else {
+                navigate('/fill-details'); // fallback
+              }
+
 
               window.location.reload();
             }

@@ -1,7 +1,9 @@
 package com.student.perf.EduTrack.controller;
 
 import com.student.perf.EduTrack.model.Student;
+import com.student.perf.EduTrack.model.User;
 import com.student.perf.EduTrack.repository.StudentRepository;
+import com.student.perf.EduTrack.repository.UserRepository;
 import com.student.perf.EduTrack.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +27,50 @@ public class StudentController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @PostMapping("/profile/fill-details/test")
+    public ResponseEntity<?> testEndpoint() {
+        return ResponseEntity.ok("Student can access this!");
+    }
+
+
+    @PostMapping("/profile/fill-details")
+    public ResponseEntity<?> fillEssentialDetails(
+            @RequestBody Student fillDetails,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        try {
+            // Fetch student blueprint
+            Student student = studentRepository.findByUsername(userDetails.getUsername())
+                    .orElseThrow(() -> new RuntimeException("Student not found"));
+
+            // Update essential fields only
+            if (fillDetails.getRollno() != 0) student.setRollno(fillDetails.getRollno());
+            if (fillDetails.getDate_of_birth() != null) student.setDate_of_birth(fillDetails.getDate_of_birth());
+            if (fillDetails.getDepartment() != null) student.setDepartment(fillDetails.getDepartment());
+            if (fillDetails.getGender() != null) student.setGender(fillDetails.getGender());
+            if (fillDetails.getFamily_income() != null) student.setFamily_income(fillDetails.getFamily_income());
+
+            // Save updated student blueprint
+            Student updatedStudent = studentRepository.save(student);
+
+            // Mark user as detailsFilled
+            User user = userRepository.findByUsername(userDetails.getUsername())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            if (!user.isDetailsFilled()) {
+                user.setDetailsFilled(true);
+                userRepository.save(user);
+            }
+
+            return ResponseEntity.ok(updatedStudent);
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
 
     // POST Request to Add Profile Details
     @PostMapping("/profile/add")
@@ -79,6 +125,14 @@ public class StudentController {
 
             // Save the updated student object
             Student updatedStudent = studentRepository.save(student);
+
+            User user = userRepository.findByUsername(userDetails.getUsername())
+                    .orElseThrow(()-> new RuntimeException("User not found"));
+            if (user != null && !user.isDetailsFilled()) {
+                user.setDetailsFilled(true);
+                userRepository.save(user);
+            }
+
 
             System.out.println("Additional profile details added for username: " + userDetails.getUsername());
 

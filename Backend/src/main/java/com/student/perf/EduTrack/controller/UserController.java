@@ -88,7 +88,8 @@ public class UserController {
             return ResponseEntity.ok(Map.of(
                     "token", token,
                     "role", user.getRole(), // Assuming getRole() fetches the role
-                        "username", username
+                        "username", username,
+                    "detailsFilled", user.isDetailsFilled()
             ));
 
         } catch (RuntimeException e) {
