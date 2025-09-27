@@ -246,15 +246,12 @@ const AssignmentIssue = () => {
         formData.append('description', description);
         formData.append('dueDate', dueDate);
 
-        try {
-            const token = localStorage.getItem('authToken');
-            const response = await fetch('http://localhost:8080/assignments/upload', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: formData,
-            });
+       try {
+        const response = await fetch('http://localhost:8080/assignments/upload', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include', // <-- important: sends HttpOnly cookie
+    });
 
             // Log raw response text
            const responseText = await response.text();
