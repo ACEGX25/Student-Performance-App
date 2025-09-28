@@ -70,7 +70,8 @@ export default function ProfileCompletion() {
         const response = await fetch(url, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          credentials: 'include' // ✅ send httpOnly cookie automatically
+          credentials: 'include', // ✅ send httpOnly cookie automatically
+          body: JSON.stringify(payload),
         });
 
         if (response.ok) {
