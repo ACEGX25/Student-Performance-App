@@ -10,6 +10,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/staff")
@@ -52,62 +53,73 @@ public class StaffController {
     }
 
     // Optional: Update staff details (similar to StudentController)
-    @PutMapping("/update")
-    public ResponseEntity<Staff> updateStaffDetails(
-            @RequestBody Staff updatedDetails,
+    @PutMapping(value = "/update/{username}", consumes = {"multipart/form-data"})
+    public ResponseEntity<?> updateStaffDetails(
+            @PathVariable String username,
+            @RequestPart("staff") Staff updatedDetails,
+            @RequestPart(value = "photo", required = false) MultipartFile photo,  // File part
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        // Retrieve the current logged-in staff
-        Staff staff = staffRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new RuntimeException("Staff not found"));
+        try {
+            // Retrieve the current logged-in staff
+            Staff staff = staffRepository.findByUsername(userDetails.getUsername())
+                    .orElseThrow(() -> new RuntimeException("Staff not found"));
 
-        // Update only non-null fields
-        if (updatedDetails.getName() != null) {
-            staff.setName(updatedDetails.getName());
-        }
-        if (updatedDetails.getEmail() != null) {
-            staff.setEmail(updatedDetails.getEmail());
-        }
-        if (updatedDetails.getPassword() != null) {
-            // Encode the password before saving it
-            String encodedPassword = passwordEncoder.encode(updatedDetails.getPassword());
-            staff.setPassword(encodedPassword);
-        }
-        if (updatedDetails.getDepartment() != null) {
-            staff.setDepartment(updatedDetails.getDepartment());
-        }
-        if (updatedDetails.getSemester() != null) {
-            staff.setSemester(updatedDetails.getSemester());
-        }
-        if (updatedDetails.getExpertise() != null) {
-            staff.setExpertise(updatedDetails.getExpertise());
-        }
-        if (updatedDetails.getExperience() != 0) {
-            staff.setExperience(updatedDetails.getExperience());
-        }
-        if (updatedDetails.getQualification() != null) {
-            staff.setQualification(updatedDetails.getQualification());
-        }
-        if (updatedDetails.getDesignation() != null) {
-            staff.setDesignation(updatedDetails.getDesignation());
-        }
-        if (updatedDetails.getArea_of_interest() != null) {
-            staff.setArea_of_interest(updatedDetails.getArea_of_interest());
-        }
-        if (updatedDetails.getAddress() != null) {
-            staff.setAddress(updatedDetails.getAddress());
-        }
-        if (updatedDetails.getDate_of_birth() != null) {
-            staff.setDate_of_birth(updatedDetails.getDate_of_birth());
-        }
-        if (updatedDetails.getSub_feedback() != 0) {
-            staff.setSub_feedback(updatedDetails.getSub_feedback());
-        }
+            // Update only non-null fields
+            if (updatedDetails.getName() != null) {
+                staff.setName(updatedDetails.getName());
+            }
+            if (updatedDetails.getEmail() != null) {
+                staff.setEmail(updatedDetails.getEmail());
+            }
+            if (updatedDetails.getPassword() != null) {
+                // Encode the password before saving it
+                String encodedPassword = passwordEncoder.encode(updatedDetails.getPassword());
+                staff.setPassword(encodedPassword);
+            }
+            if (updatedDetails.getDepartment() != null) {
+                staff.setDepartment(updatedDetails.getDepartment());
+            }
+            if (updatedDetails.getSemester() != null) {
+                staff.setSemester(updatedDetails.getSemester());
+            }
+            if (updatedDetails.getExpertise() != null) {
+                staff.setExpertise(updatedDetails.getExpertise());
+            }
+            if (updatedDetails.getExperience() != 0) {
+                staff.setExperience(updatedDetails.getExperience());
+            }
+            if (updatedDetails.getQualification() != null) {
+                staff.setQualification(updatedDetails.getQualification());
+            }
+            if (updatedDetails.getDesignation() != null) {
+                staff.setDesignation(updatedDetails.getDesignation());
+            }
+            if (updatedDetails.getArea_of_interest() != null) {
+                staff.setArea_of_interest(updatedDetails.getArea_of_interest());
+            }
+            if (updatedDetails.getAddress() != null) {
+                staff.setAddress(updatedDetails.getAddress());
+            }
+            if (updatedDetails.getDate_of_birth() != null) {
+                staff.setDate_of_birth(updatedDetails.getDate_of_birth());
+            }
+            if (updatedDetails.getSub_feedback() != 0) {
+                staff.setSub_feedback(updatedDetails.getSub_feedback());
+            }
 
-        // Save the updated staff details
-        staffRepository.save(staff);
+            // ✅ Handle photo update
+            if (photo != null && !photo.isEmpty()) {
+                staff.setPhoto(photo.getBytes());  // assuming 'photo' is a byte[] column in DB
+            }
 
-        return ResponseEntity.ok(staff);
+            // Save the updated staff details
+            staffRepository.save(staff);
+            System.out.println("Staff details updated successfully for username: " + userDetails.getUsername());
+
+            return ResponseEntity.ok(staff);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
     }
-
 }

@@ -30,8 +30,13 @@ public class Staff extends User {
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     private Date date_of_birth;
     private int sub_feedback;
+    private byte[] photo;   // Profile photo stored as binary
 
     //Getter Setter chya aaychi
+
+    public byte[] getPhoto() { return photo; }
+
+    public void setPhoto(byte[] photo) { this.photo = photo; }
 
     public String getDepartment() {
         return department;

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {Briefcase, Award, Book, Star, MapPin, Calendar, BarChart, Users, ChevronRight} from 'lucide-react';
 import './TeacherDash.css';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import TeacherTimetable from './Time-table'
 
 
@@ -11,6 +11,7 @@ const TeacherDashboard = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
     const fetchData = async () => {
@@ -48,6 +49,7 @@ const TeacherDashboard = () => {
     fetchData();
     }, []);
 
+    const username = localStorage.getItem("username");
 
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
@@ -80,23 +82,37 @@ const TeacherDashboard = () => {
                     <h1 className="text-2xl font-bold">EduTrack</h1>
                
                 <nav className={`md:flex space-x-4 ${isMenuOpen ? 'block' : 'hidden'}`}>
-                <a href="#" className="block md:inline-block py-2 hover:text-blue-200">Dashboard</a>
+                <Link to={`/staff/profile/${username}`} className="block md:inline-block py-2 hover:text-blue-200">Dashboard</Link>
             <a href="#" className="block md:inline-block py-2 hover:text-blue-200" onClick={handleLogout}>Logout</a>
           </nav>
           </div>
             </header>
 
             <main className="flex-grow container mx-auto p-4 dashboard-content">
-                <div className="welcome-header mb-6 p-6 bg-white rounded-lg shadow-md relative overflow-hidden">
+               <div className="welcome-header mb-6 p-6 bg-white rounded-lg shadow-md relative overflow-hidden">
                     <div className="flex items-center relative z-10">
-                        <h2 className="text-3xl font-semibold">Welcome, {teacherData ? teacherData.name : 'Guest'}!</h2>
+                        <div className="mr-6">
+                        <img
+                            src={teacherData?.photo 
+                            ? `data:image/jpeg;base64,${teacherData.photo}` 
+                            : '/placeholder.svg?height=100&width=100'}
+                            alt={`${teacherData?.name || "User"}'s profile`}
+                            className="w-24 h-24 rounded-full object-cover border-4 border-blue-500"
+                        />
+                        </div>
+                        <h2 className="text-3xl font-semibold">
+                        Welcome, {teacherData ? teacherData.name : 'Guest'}!
+                        </h2>
                     </div>
+
+                    {/* background shapes */}
                     <div className="shape circle1"></div>
                     <div className="shape circle2"></div>
                     <div className="shape square1"></div>
                     <div className="shape triangle1"></div>
                     <div className="shape rectangle1"></div>
-                </div>
+                    </div>
+
 
                 {teacherData && (
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
@@ -130,26 +146,26 @@ const TeacherProfile = ({ teacherData }) => {
         return <p>Loading profile...</p>;
     }
 
-    return (
-        <div className="teacher-profile bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-2xl font-bold mb-4">Staff Details</h2>
-            <div className="profile-items">
-                <ProfileItem icon={Briefcase} label="Department" value={teacherData.department} />
-                <ProfileItem icon={Briefcase} label="Semester" value={teacherData.semester} />
-                <ProfileItem icon={Award} label="Experience" value={`${teacherData.experience} years`} />
-                <ProfileItem icon={Book} label="Expertise" value={teacherData.expertise} />
-                <ProfileItem icon={Award} label="Qualification" value={teacherData.qualification} />
-                <ProfileItem icon={Briefcase} label="Designation" value={teacherData.designation} />
-                <ProfileItem icon={Star} label="Area of Interest" value={teacherData.area_of_interest} />
-                <ProfileItem icon={MapPin} label="Address" value={teacherData.address} />
-                <ProfileItem
-                    icon={Calendar}
-                    label="Date of Birth"
-                    value={teacherData.date_of_birth ? teacherData.date_of_birth.split('-').join(' / ') : 'N/A'}
-                />
-            </div>
-        </div>
-    );
+    // return (
+    //     <div className="teacher-profile bg-white p-6 rounded-lg shadow-md">
+    //         <h2 className="text-2xl font-bold mb-4">Staff Details</h2>
+    //         <div className="profile-items">
+    //             <ProfileItem icon={Briefcase} label="Department" value={teacherData.department} />
+    //             <ProfileItem icon={Briefcase} label="Semester" value={teacherData.semester} />
+    //             <ProfileItem icon={Award} label="Experience" value={`${teacherData.experience} years`} />
+    //             <ProfileItem icon={Book} label="Expertise" value={teacherData.expertise} />
+    //             <ProfileItem icon={Award} label="Qualification" value={teacherData.qualification} />
+    //             <ProfileItem icon={Briefcase} label="Designation" value={teacherData.designation} />
+    //             <ProfileItem icon={Star} label="Area of Interest" value={teacherData.area_of_interest} />
+    //             <ProfileItem icon={MapPin} label="Address" value={teacherData.address} />
+    //             <ProfileItem
+    //                 icon={Calendar}
+    //                 label="Date of Birth"
+    //                 value={teacherData.date_of_birth ? teacherData.date_of_birth.split('-').join(' / ') : 'N/A'}
+    //             />
+    //         </div>
+    //     </div>
+    // );
 };
 
 
@@ -184,42 +200,42 @@ const QuickAttendance = () => {
         setAbsentees('');
     };
 
-    return (
-        <div className="quick-attendance mb-6 bg-white p-6 rounded-lg shadow-md hover-effect">
-            <h2 className="text-xl font-bold mb-4 flex items-center">
-                <Users className="w-5 h-5 mr-2 text-blue-500" />
-                Quick Attendance
-            </h2>
-            <form onSubmit={handleSubmit} className="mb-4">
-                <div className="flex items-center">
-                    <input
-                        type="text"
-                        value={absentees}
-                        onChange={(e) => setAbsentees(e.target.value)}
-                        placeholder="Enter roll numbers"
-                        className="flex-grow mr-2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        aria-label="Absent roll numbers"
-                    />
-                    <button
-                        type="submit"
-                        className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                    >
-                        Mark Absent
-                    </button>
-                </div>
-            </form>
-            {submittedAbsentees.length > 0 && (
-                <div>
-                    <h3 className="text-lg font-semibold mb-2">Absent Students:</h3>
-                    <ul className="list-disc list-inside">
-                        {submittedAbsentees.map((rollNumber, index) => (
-                            <li key={index} className="text-red-500">Roll No. {rollNumber}</li>
-                        ))}
-                    </ul>
-                </div>
-            )}
-        </div>
-    );
+    // return (
+    //   <div className="quick-attendance mb-6 bg-white p-6 rounded-lg shadow-md hover-effect">
+    //         <h2 className="text-xl font-bold mb-4 flex items-center">
+    //             <Users className="w-5 h-5 mr-2 text-blue-500" />
+    //             Quick Attendance
+    //         </h2>
+    //         <form onSubmit={handleSubmit} className="mb-4">
+    //             <div className="flex items-center">
+    //                 <input
+    //                     type="text"
+    //                     value={absentees}
+    //                     onChange={(e) => setAbsentees(e.target.value)}
+    //                     placeholder="Enter roll numbers"
+    //                     className="flex-grow mr-2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+    //                     aria-label="Absent roll numbers"
+    //                 />
+    //                 <button
+    //                     type="submit"
+    //                     className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+    //                 >
+    //                     Mark Absent
+    //                 </button>
+    //             </div>
+    //         </form>
+    //         {submittedAbsentees.length > 0 && (
+    //             <div>
+    //                 <h3 className="text-lg font-semibold mb-2">Absent Students:</h3>
+    //                 <ul className="list-disc list-inside">
+    //                     {submittedAbsentees.map((rollNumber, index) => (
+    //                         <li key={index} className="text-red-500">Roll No. {rollNumber}</li>
+    //                     ))}
+    //                 </ul>
+    //             </div>
+    //         )}
+    //     </div>
+    // );
 };
 
 const AssignmentIssue = () => {

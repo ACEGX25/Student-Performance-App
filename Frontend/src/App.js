@@ -13,6 +13,7 @@ import Time from './Admin/Assist/Timetable'
 import Search from './Admin/Assist/Search.js'
 import Assignments from './Assignment_Board/Assignment';
 import Timetablef from './TeacherDash/Fulltt'
+import StaffProfile from './TeacherDash/StaffProfile.js';
 
 // Component for Handling Routes
 function AnimatedRoutes() {
@@ -29,6 +30,7 @@ function AnimatedRoutes() {
       <Route path="/student/profile/:username" element={<UserProfile />} />
         <Route path="/student/assignments" element={<Assignments />} />
       <Route path="/staff/dashboard/:username" element={<TeacherDash />}/>
+      <Route path="/staff/profile/:username" element={<StaffProfile/>}/>
         <Route path="/staff/Time-table" element={<Timetablef />} />
       <Route path="/student/viewresult" element={<ResultPortal />}/>
       <Route path="/admin/time-table" element={<Time />}/>
