@@ -1,8 +1,12 @@
 package com.student.perf.EduTrack.controller;
 
 import com.student.perf.EduTrack.config.JwtUtil;
+import com.student.perf.EduTrack.config.OtpUtil;
+import com.student.perf.EduTrack.repository.UserRepository;
 import com.student.perf.EduTrack.model.User;
 import com.student.perf.EduTrack.model.RefreshToken;
+import com.student.perf.EduTrack.service.EmailService;
+import com.student.perf.EduTrack.service.OtpService;
 import com.student.perf.EduTrack.service.RefreshTokenService;
 import com.student.perf.EduTrack.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Cookie;
+
 import java.util.Map;
 
 @RestController
@@ -30,6 +35,15 @@ public class UserController {
 
     @Autowired
     private RefreshTokenService refreshTokenService;
+
+    @Autowired
+    private OtpService otpService;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private EmailService emailService;
 
     // =======================
     // Signup API
@@ -57,6 +71,45 @@ public class UserController {
         }
     }
 
+    @PostMapping("/signup/send-otp")
+    public ResponseEntity<?> sendOtp(@RequestParam String email) {
+        // Check if user exists
+        User user = userRepository.findByEmail(email).orElse(null);
+        if (user == null) {
+            return ResponseEntity.badRequest().body(Map.of("error", "User not registered yet. Please signup first."));
+        }
+        if (user.isVerified()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Email already verified"));
+        }
+
+        try {
+            String otp = otpService.generateOtp(email);
+            emailService.sendOtpEmail(email, otp);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+
+        return ResponseEntity.ok(Map.of("message", "OTP sent to " + email));
+    }
+
+
+
+    @PostMapping("/signup/verify-otp")
+    public ResponseEntity<?> verifyOtp(@RequestParam String email, @RequestParam String otp) {
+        if (!otpService.verifyOtp(email, otp)) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Invalid or expired OTP"));
+        }
+
+        // mark user as verified
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setVerified(true);
+        userRepository.save(user);
+
+        return ResponseEntity.ok(Map.of("message", "Email verified successfully"));
+    }
+
+
     // =======================
     // Login API
     // =======================
@@ -79,6 +132,12 @@ public class UserController {
             if (user == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body(Map.of("error", "Invalid username or password"));
+            }
+
+            //OTP verified flag authorize
+            if (!user.isVerified()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(Map.of("error", "Email not verified"));
             }
 
             // Generate JWT access token

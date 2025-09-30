@@ -21,11 +21,10 @@ public class User {
     private String password;
     private String role;
     private boolean detailsFilled = false;
+    private boolean verified = false;
 
 
-    public String getName() {
-        return name;
-    }
+    public String getName() {return name;}
 
     public void setName(String name) {
         this.name = name;
