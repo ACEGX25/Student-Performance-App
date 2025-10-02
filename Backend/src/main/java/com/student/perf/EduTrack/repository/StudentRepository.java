@@ -19,4 +19,7 @@ public interface StudentRepository extends MongoRepository<Student, String> {
     // Search students by name, roll number, or department
     @Query("{ '$or': [ {'name': ?0}, {'rollno': ?0}, {'department': ?0} ] }")
     List<Student> findByNameOrRollNoOrDepartment(String query);
+
+    List<Student> findBySubjectsContaining(String subjectId);
+
 }

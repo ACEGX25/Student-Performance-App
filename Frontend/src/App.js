@@ -14,6 +14,7 @@ import Search from './Admin/Assist/Search.js'
 import Assignments from './Assignment_Board/Assignment';
 import Timetablef from './TeacherDash/Fulltt'
 import StaffProfile from './TeacherDash/StaffProfile.js';
+import Subjectworkspace from './TeacherDash/Workspace'
 
 // Component for Handling Routes
 function AnimatedRoutes() {
@@ -32,6 +33,7 @@ function AnimatedRoutes() {
       <Route path="/staff/dashboard/:username" element={<TeacherDash />}/>
       <Route path="/staff/profile/:username" element={<StaffProfile/>}/>
         <Route path="/staff/Time-table" element={<Timetablef />} />
+        <Route path="/staff/subject/:subject" element={<Subjectworkspace/>}/>
       <Route path="/student/viewresult" element={<ResultPortal />}/>
       <Route path="/admin/time-table" element={<Time />}/>
         <Route path="/admin/Search" element={<Search />}/>

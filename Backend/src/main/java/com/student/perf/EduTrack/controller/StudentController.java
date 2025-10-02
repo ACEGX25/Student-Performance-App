@@ -1,8 +1,10 @@
 package com.student.perf.EduTrack.controller;
 
 import com.student.perf.EduTrack.model.Student;
+import com.student.perf.EduTrack.model.SubjectStat;
 import com.student.perf.EduTrack.model.User;
 import com.student.perf.EduTrack.repository.StudentRepository;
+import com.student.perf.EduTrack.repository.SemesterRepository;
 import com.student.perf.EduTrack.repository.UserRepository;
 import com.student.perf.EduTrack.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/student")
@@ -30,6 +34,9 @@ public class StudentController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private SemesterRepository semesterRepository;
 
     @PostMapping("/profile/fill-details/test")
     public ResponseEntity<?> testEndpoint() {
@@ -157,10 +164,6 @@ public class StudentController {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
-
-
-
-
     // Secure PUT Request for Student details update (with photo upload)
     @PutMapping(value = "/update/{username}", consumes = {"multipart/form-data"})
     public ResponseEntity<?> updateStudentDetails(
@@ -187,6 +190,21 @@ public class StudentController {
             if (updatedDetails.getDepartment() != null) {
                 student.setDepartment(updatedDetails.getDepartment());
             }
+
+            // ✅ Simple semester update
+            if (updatedDetails.getSemester() != null && !updatedDetails.getSemester().equals(student.getSemester())) {
+                student.setSemester(updatedDetails.getSemester());
+
+                // Only try to fetch subjects if department is set
+                if (student.getDepartment() != null) {
+                    var semConfig = semesterRepository.findByDepartmentAndSemester(
+                            student.getDepartment(), student.getSemester());
+
+                    // If a config exists, populate subjects; otherwise skip silently
+                    semConfig.ifPresent(config -> student.setSubjects(config.getSubjects()));
+                }
+            }
+
             if (updatedDetails.getExtracurricular_activities() != null) {
                 student.setExtracurricular_activities(updatedDetails.getExtracurricular_activities());
             }

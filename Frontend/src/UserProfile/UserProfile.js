@@ -252,24 +252,68 @@ function UserProfile() {
             </div>
 
             <div className="up-card-content">
-              <div className="up-field"><b>Roll No:</b> {editing ? <input className="up-input" name="rollno" type="text" value={editedData.rollno ?? ""} onChange={handleChange} /> : userData.rollno}</div>
-              <div className="up-field"><b>Name:</b> {editing ? <input className="up-input" name="name" type="text" value={editedData.name ?? ""} onChange={handleChange} /> : userData.name}</div>
-              <div className="up-field"><b>Email:</b> {editing ? <input className="up-input" name="email" type="email" value={editedData.email ?? ""} onChange={handleChange} /> : userData.email}</div>
-              <div className="up-field"><b>Department:</b> {editing ? <input className="up-input" name="department" type="text" value={editedData.department ?? ""} onChange={handleChange} /> : userData.department}</div>
-              <div className="up-field"><b>Extracurricular Activities:</b> {editing ? <input className="up-input" name="extracurricular_activities" type="text" value={editedData.extracurricular_activities ?? ""} onChange={handleChange} /> : userData.extracurricular_activities}</div>
-              <div className="up-field"><b>Sleep Hours:</b> {editing ? <input className="up-input" name="sleep_hours" type="number" value={editedData.sleep_hours ?? ""} onChange={handleChange} /> : userData.sleep_hours}</div>
-              <div className="up-field"><b>Tutoring Sessions:</b> {editing ? <input className="up-input" name="tutoring_sessions" type="number" value={editedData.tutoring_sessions ?? ""} onChange={handleChange} /> : userData.tutoring_sessions}</div>
-              <div className="up-field"><b>Family Income:</b> {editing ? <input className="up-input" name="family_income" type="number" value={editedData.family_income ?? ""} onChange={handleChange} /> : `₹${userData.family_income ?? 0}`}</div>
+              <div className="up-field"><b>Roll No:</b> {editing ?
+                  <input className="up-input" name="rollno" type="text" value={editedData.rollno ?? ""}
+                         onChange={handleChange}/> : userData.rollno}</div>
+              <div className="up-field"><b>Name:</b> {editing ?
+                  <input className="up-input" name="name" type="text" value={editedData.name ?? ""}
+                         onChange={handleChange}/> : userData.name}</div>
+              <div className="up-field"><b>Email:</b> {editing ?
+                  <input className="up-input" name="email" type="email" value={editedData.email ?? ""}
+                         onChange={handleChange}/> : userData.email}</div>
+              <div className="up-field"><b>Department:</b> {editing ?
+                  <input className="up-input" name="department" type="text" value={editedData.department ?? ""}
+                         onChange={handleChange}/> : userData.department}</div>
+              <div className="up-field">
+                <b>Semester:</b>
+                {editing ? (
+                    <input
+                        className="up-input"
+                        name="semester"
+                        type="text"
+                        value={editedData.semester ?? ""}
+                        onChange={handleChange}
+                    />
+                ) : (
+                    userData.semester
+                )}
+              </div>
+              <div className="up-field"><b>Extracurricular Activities:</b> {editing ?
+                  <input className="up-input" name="extracurricular_activities" type="text"
+                         value={editedData.extracurricular_activities ?? ""}
+                         onChange={handleChange}/> : userData.extracurricular_activities}</div>
+              <div className="up-field"><b>Sleep Hours:</b> {editing ?
+                  <input className="up-input" name="sleep_hours" type="number" value={editedData.sleep_hours ?? ""}
+                         onChange={handleChange}/> : userData.sleep_hours}</div>
+              <div className="up-field"><b>Tutoring Sessions:</b> {editing ?
+                  <input className="up-input" name="tutoring_sessions" type="number"
+                         value={editedData.tutoring_sessions ?? ""}
+                         onChange={handleChange}/> : userData.tutoring_sessions}</div>
+              <div className="up-field"><b>Family Income:</b> {editing ?
+                  <input className="up-input" name="family_income" type="number" value={editedData.family_income ?? ""}
+                         onChange={handleChange}/> : `₹${userData.family_income ?? 0}`}</div>
               <div className="up-field"><b>Teacher Review:</b> {userData.teacher_review}</div>
-              <div className="up-field"><b>Physical Activity:</b> {editing ? <input className="up-input" name="physical_activity" type="number" value={editedData.physical_activity ?? ""} onChange={handleChange} /> : userData.physical_activity}</div>
-              <div className="up-field"><b>Learning Disabilities:</b> {editing ? <input className="up-input" name="learning_disabilities" type="text" value={editedData.learning_disabilities ?? ""} onChange={handleChange} /> : userData.learning_disabilities}</div>
-              <div className="up-field"><b>Distance from Home:</b> {editing ? <input className="up-input" name="distance_from_home" type="number" value={editedData.distance_from_home ?? ""} onChange={handleChange} /> : userData.distance_from_home}</div>
+              <div className="up-field"><b>Physical Activity:</b> {editing ?
+                  <input className="up-input" name="physical_activity" type="number"
+                         value={editedData.physical_activity ?? ""}
+                         onChange={handleChange}/> : userData.physical_activity}</div>
+              <div className="up-field"><b>Learning Disabilities:</b> {editing ?
+                  <input className="up-input" name="learning_disabilities" type="text"
+                         value={editedData.learning_disabilities ?? ""}
+                         onChange={handleChange}/> : userData.learning_disabilities}</div>
+              <div className="up-field"><b>Distance from Home:</b> {editing ?
+                  <input className="up-input" name="distance_from_home" type="number"
+                         value={editedData.distance_from_home ?? ""}
+                         onChange={handleChange}/> : userData.distance_from_home}</div>
               <div className="up-field"><b>Gender:</b>
                 {editing ? (
-                  <div>
-                    <label style={{ marginRight: 12 }}><input type="radio" name="gender" value="Male" checked={editedData.gender === "Male"} onChange={handleChange} /> Male</label>
-                    <label><input type="radio" name="gender" value="Female" checked={editedData.gender === "Female"} onChange={handleChange} /> Female</label>
-                  </div>
+                    <div>
+                      <label style={{marginRight: 12}}><input type="radio" name="gender" value="Male"
+                                                              checked={editedData.gender === "Male"}
+                                                              onChange={handleChange}/> Male</label>
+                      <label><input type="radio" name="gender" value="Female" checked={editedData.gender === "Female"}
+                                    onChange={handleChange}/> Female</label>
+                    </div>
                 ) : userData.gender}
               </div>
             </div>
@@ -277,9 +321,9 @@ function UserProfile() {
         </div>
 
         {editing && (
-          <div className="up-actions">
-            <button className="up-button up-button-primary" onClick={handleSave}>Save</button>
-            <button className="up-button up-button-secondary" onClick={handleCancel}>Cancel</button>
+            <div className="up-actions">
+              <button className="up-button up-button-primary" onClick={handleSave}>Save</button>
+              <button className="up-button up-button-secondary" onClick={handleCancel}>Cancel</button>
           </div>
         )}
       </div>

@@ -116,14 +116,19 @@ const TeacherDashboard = () => {
 
                 {teacherData && (
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-                         <div className="column right-column md:col-span-3">
-                            <TeacherProfile teacherData={teacherData}/>
+                        <div className="column right-column md:col-span-3">
+                            <h2 className="text-2xl font-bold mb-4">Your Subjects</h2>
+                            {teacherData.subjects && teacherData.subjects.length > 0 ? (
+                                    <TeacherProfile teacherData={teacherData}/>
+                            ) : (
+                                <p className="text-gray-500">No subjects assigned yet.</p>
+                            )}
                         </div>
                         <div className="column middle-column md:col-span-6">
                             <TeacherFeedback feedback={teacherData.sub_feedback}/>
-                            <TeacherTimetable semester={teacherData.semester} department={teacherData.department} />
+                            <TeacherTimetable semester={teacherData.semester} department={teacherData.department}/>
                         </div>
-                       
+
                         <div className="column left-column md:col-span-3">
                             <QuickAttendance/>
                             <AssignmentIssue/>
@@ -142,34 +147,31 @@ const TeacherDashboard = () => {
 };
 
 const TeacherProfile = ({ teacherData }) => {
-    if (!teacherData) {
-        return <p>Loading profile...</p>;
-    }
+    if (!teacherData) return <p>Loading subjects...</p>;
 
-    // return (
-    //     <div className="teacher-profile bg-white p-6 rounded-lg shadow-md">
-    //         <h2 className="text-2xl font-bold mb-4">Staff Details</h2>
-    //         <div className="profile-items">
-    //             <ProfileItem icon={Briefcase} label="Department" value={teacherData.department} />
-    //             <ProfileItem icon={Briefcase} label="Semester" value={teacherData.semester} />
-    //             <ProfileItem icon={Award} label="Experience" value={`${teacherData.experience} years`} />
-    //             <ProfileItem icon={Book} label="Expertise" value={teacherData.expertise} />
-    //             <ProfileItem icon={Award} label="Qualification" value={teacherData.qualification} />
-    //             <ProfileItem icon={Briefcase} label="Designation" value={teacherData.designation} />
-    //             <ProfileItem icon={Star} label="Area of Interest" value={teacherData.area_of_interest} />
-    //             <ProfileItem icon={MapPin} label="Address" value={teacherData.address} />
-    //             <ProfileItem
-    //                 icon={Calendar}
-    //                 label="Date of Birth"
-    //                 value={teacherData.date_of_birth ? teacherData.date_of_birth.split('-').join(' / ') : 'N/A'}
-    //             />
-    //         </div>
-    //     </div>
-    // );
+    return (
+        <div className="teacher-profile bg-white p-6 rounded-lg shadow-md">
+            {teacherData.subjects && teacherData.subjects.length > 0 ? (
+                <div className="flex flex-wrap gap-4 mt-2">
+                    {teacherData.subjects.map((sub, i) => (
+                        <Link
+                            key={i}
+                            to={`/staff/subject/${encodeURIComponent(sub)}`} // dynamic URL for subject
+                            className="subject-card bg-blue-100 hover:bg-blue-200 text-blue-800 px-4 py-2 rounded-lg shadow-md transition-all duration-200 font-medium"
+                        >
+                            {sub}
+                        </Link>
+                    ))}
+                </div>
+            ) : (
+                <p className="text-gray-500">No subjects assigned yet.</p>
+            )}
+        </div>
+    );
 };
 
 
-const TeacherFeedback = ({ feedback }) => {
+const TeacherFeedback = ({feedback}) => {
     return (
         <div className="teacher-feedback bg-white p-6 rounded-lg shadow-md">
             <h2 className="text-2xl font-bold mb-4">Subject Feedback</h2>

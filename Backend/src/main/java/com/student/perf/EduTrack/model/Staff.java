@@ -10,6 +10,7 @@ import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.util.Date;
+import java.util.List;
 
 
 @Data
@@ -30,7 +31,8 @@ public class Staff extends User {
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     private Date date_of_birth;
     private int sub_feedback;
-    private byte[] photo;   // Profile photo stored as binary
+    private byte[] photo;// Profile photo stored as binary
+    private List<String> subjects;
 
     //Getter Setter chya aaychi
 
@@ -112,5 +114,13 @@ public class Staff extends User {
 
     public void setSub_feedback(int sub_feedback) {
         this.sub_feedback = sub_feedback;
+    }
+
+    public List<String> getSubjects() {
+        return subjects;
+    }
+
+    public void setSubjects(List<String> subjects) {
+        this.subjects = subjects;
     }
 }

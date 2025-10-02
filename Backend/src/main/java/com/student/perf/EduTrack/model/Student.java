@@ -9,12 +9,16 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Data
 @Getter
 @Setter
 @Document(collection = "student-info") // MongoDB collection name
 public class Student extends User{
+
 
     private int rollno;                            // Student Roll Number
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
@@ -34,6 +38,9 @@ public class Student extends User{
     private String distance_from_home;               // Distance from home (Near/Far)
     private String gender;                         // Gender (Male/Female/Other)
     private int exam_score;                         // Exam score
+    private String semester;
+    private List<String> subjects;
+    private Map<String, SubjectStat> subjectStats = new HashMap<>();
 
     private byte[] photo;   // Profile photo stored as binary
 
@@ -167,5 +174,29 @@ public class Student extends User{
 
     public void setDate_of_birth(Date date_of_birth) {
         this.date_of_birth = date_of_birth;
+    }
+
+    public List<String> getSubjects() {
+        return subjects;
+    }
+
+    public void setSubjects(List<String> subjects) {
+        this.subjects = subjects;
+    }
+
+    public String getSemester() {
+        return semester;
+    }
+
+    public void setSemester(String semester) {
+        this.semester = semester;
+    }
+
+    public Map<String, SubjectStat> getSubjectStats() {
+        return subjectStats;
+    }
+
+    public void setSubjectStats(Map<String, SubjectStat> subjectStats) {
+        this.subjectStats = subjectStats;
     }
 }
