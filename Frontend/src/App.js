@@ -15,6 +15,7 @@ import Assignments from './Assignment_Board/Assignment';
 import Timetablef from './TeacherDash/Fulltt'
 import StaffProfile from './TeacherDash/StaffProfile.js';
 import Subjectworkspace from './TeacherDash/Workspace'
+import OtpVerificationPage from './OTP/OtpVerificationPage.js';
 
 // Component for Handling Routes
 function AnimatedRoutes() {
@@ -37,6 +38,7 @@ function AnimatedRoutes() {
       <Route path="/student/viewresult" element={<ResultPortal />}/>
       <Route path="/admin/time-table" element={<Time />}/>
         <Route path="/admin/Search" element={<Search />}/>
+        <Route path="/verify-otp" element={<OtpVerificationPage />}/>
     </Routes>
   );
 }

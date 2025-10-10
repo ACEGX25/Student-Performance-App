@@ -79,11 +79,13 @@ const AuthPage = () => {
           navigate('/fill-details');
         }
       } else {
-        setMessage('Account created successfully! Redirecting to login...');
-        setTimeout(() => {
-          setIsLogin(true);
-          setMessage('');
-        }, 3000);
+        // setMessage('Account created successfully! Redirecting to login...');
+        // setTimeout(() => {
+        //   setIsLogin(true);
+        //   setMessage('');
+        // }, 3000);
+        setMessage('OTP has been sent to your email. Please verify.');
+        navigate('/verify-otp', { state: { email } });
       }
     } catch (error) {
       setMessage('Error: ' + error.message);
